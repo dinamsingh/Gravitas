@@ -579,11 +579,9 @@ function renderPlanner() {
         </div>
 
         <form id="planForm" class="form-grid">
-          <label class="label wide">Search Exercise
-            <input class="control" name="exerciseName" list="planExerciseList" placeholder="Search exercise name" autocomplete="off" />
-            <datalist id="planExerciseList">
-              ${state.exercises.map((exercise) => `<option value="${escapeHtml(exercise.name)}">${escapeHtml(exercise.muscleGroup)} - ${escapeHtml(exercise.equipment)}</option>`).join("")}
-            </datalist>
+          <label class="label wide plan-search-field">Search Exercise
+            <input class="control" id="planExerciseSearch" name="exerciseName" placeholder="Search exercise name" autocomplete="off" />
+            <div class="plan-suggestions" id="planExerciseSuggestions" role="listbox" aria-label="Exercise suggestions"></div>
           </label>
           <button class="button primary" type="submit">Add Exercise</button>
         </form>
@@ -977,6 +975,52 @@ function attachPlannerHandlers(view) {
       render();
     });
   });
+
+  const exerciseSearch = view.querySelector("#planExerciseSearch");
+  const suggestions = view.querySelector("#planExerciseSuggestions");
+  const closeSuggestions = () => {
+    if (!suggestions) return;
+    suggestions.classList.remove("show");
+    suggestions.innerHTML = "";
+  };
+  const showSuggestions = () => {
+    if (!exerciseSearch || !suggestions) return;
+    const query = exerciseSearch.value.trim().toLowerCase();
+    const matches = state.exercises
+      .filter((exercise) => {
+        const haystack = `${exercise.name} ${exercise.muscleGroup} ${exercise.equipment}`.toLowerCase();
+        return !query || haystack.includes(query);
+      })
+      .slice(0, 8);
+
+    if (!matches.length) {
+      closeSuggestions();
+      return;
+    }
+
+    suggestions.innerHTML = matches.map((exercise) => `
+      <button class="plan-suggestion" type="button" data-exercise-name="${escapeHtml(exercise.name)}">
+        <strong>${escapeHtml(exercise.name)}</strong>
+        <span>${escapeHtml(exercise.muscleGroup)} - ${escapeHtml(exercise.equipment)}</span>
+      </button>
+    `).join("");
+    suggestions.classList.add("show");
+  };
+
+  if (exerciseSearch) {
+    exerciseSearch.addEventListener("focus", showSuggestions);
+    exerciseSearch.addEventListener("input", showSuggestions);
+    exerciseSearch.addEventListener("blur", () => setTimeout(closeSuggestions, 160));
+  }
+
+  suggestions?.addEventListener("mousedown", (event) => {
+    const button = event.target.closest("[data-exercise-name]");
+    if (!button || !exerciseSearch) return;
+    event.preventDefault();
+    exerciseSearch.value = button.dataset.exerciseName;
+    closeSuggestions();
+  });
+
   view.querySelector("#planForm").addEventListener("submit", (event) => {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(event.currentTarget));
