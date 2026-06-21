@@ -232,6 +232,7 @@ function normalizeState(value) {
       showPlanCustomForm: false,
       planExerciseSearch: "",
       statsExerciseId: null,
+      statsExerciseSearch: "",
       ...(value.ui || {})
     }
   };
@@ -711,23 +712,27 @@ function renderHistory() {
         ${sessions.length ? sessions.map((session) => {
           const logs = state.logs.filter((log) => log.sessionId === session.id);
           return `
-            <article class="history-row">
-              <div>
-                <h3>${formatDateTime(session.workoutDate)}</h3>
-                <p class="muted">${logs.length} sets, ${Math.round(totalVolume(logs))} volume, ${session.durationMinutes || 0} min</p>
-                ${session.notes ? `<p>${escapeHtml(session.notes)}</p>` : ""}
-                <details>
-                  <summary>View sets</summary>
-                  <div class="card-list" style="margin-top:10px">
-                    ${logs.map((log) => {
-                      const exercise = exerciseById(log.exerciseId);
-                      return `<div class="item-card compact"><strong>${escapeHtml(exercise?.name || "Exercise")}</strong><p class="muted">Set ${log.setNumber}: ${log.actualWeight}${state.settings.unit} x ${log.actualReps}</p></div>`;
-                    }).join("")}
-                  </div>
-                </details>
+            <div class="swipe-container">
+              <div class="swipe-actions">
+                <button class="swipe-delete-btn" type="button" data-delete-session="${session.id}">Delete</button>
               </div>
-              <button class="button heat small" type="button" data-delete-session="${session.id}">Delete</button>
-            </article>
+              <article class="history-row swipe-content">
+                <div>
+                  <h3>${formatDateTime(session.workoutDate)}</h3>
+                  <p class="muted">${logs.length} sets, ${Math.round(totalVolume(logs))} volume, ${session.durationMinutes || 0} min</p>
+                  ${session.notes ? `<p>${escapeHtml(session.notes)}</p>` : ""}
+                  <details>
+                    <summary>View sets</summary>
+                    <div class="card-list" style="margin-top:10px">
+                      ${logs.map((log) => {
+                        const exercise = exerciseById(log.exerciseId);
+                        return `<div class="item-card compact"><strong>${escapeHtml(exercise?.name || "Exercise")}</strong><p class="muted">Set ${log.setNumber}: ${log.actualWeight}${state.settings.unit} x ${log.actualReps}</p></div>`;
+                      }).join("")}
+                    </div>
+                  </details>
+                </div>
+              </article>
+            </div>
           `;
         }).join("") : `<div class="empty-state">Abhi workout history empty hai. Pehla workout complete karte hi yahan dikhega.</div>`}
       </div>
@@ -739,6 +744,17 @@ function renderStats() {
   const rows = personalBestRows();
   if (!state.ui.statsExerciseId && rows.length) state.ui.statsExerciseId = rows[0].exerciseId;
   const selectedExercise = exerciseById(state.ui.statsExerciseId);
+  if (selectedExercise && !state.ui.statsExerciseSearch) {
+    state.ui.statsExerciseSearch = selectedExercise.name;
+  }
+  const hasSelectedInRows = rows.some((row) => Number(row.exerciseId) === Number(state.ui.statsExerciseId));
+  const selectOptions = [...rows];
+  if (!hasSelectedInRows && selectedExercise) {
+    selectOptions.push({
+      exerciseId: selectedExercise.id,
+      name: selectedExercise.name
+    });
+  }
   const sessions = [...state.sessions].sort((a, b) => b.workoutDate - a.workoutDate);
 
   return `
@@ -757,13 +773,47 @@ function renderStats() {
           <div class="metric"><span>Total Volume</span><strong>${Math.round(totalVolume())}</strong></div>
         </div>
         <div style="margin-top:16px">
-          <div class="row between">
+          <div class="row between" style="margin-bottom:12px">
             <h3>Strength Progress</h3>
-            <select class="control" id="statsExercise" style="max-width:280px">
-              ${rows.map((row) => `<option value="${row.exerciseId}" ${Number(row.exerciseId) === Number(state.ui.statsExerciseId) ? "selected" : ""}>${escapeHtml(row.name)}</option>`).join("")}
+            <select class="control" id="statsExercise" style="max-width:200px">
+              ${selectOptions.map((row) => `<option value="${row.exerciseId}" ${Number(row.exerciseId) === Number(state.ui.statsExerciseId) ? "selected" : ""}>${escapeHtml(row.name)}</option>`).join("")}
             </select>
           </div>
-          ${selectedExercise ? progressChart(selectedExercise.id) : `<div class="empty-state">Progress data banane ke liye pehle workout log karo.</div>`}
+          <div class="plan-search-field" style="margin-bottom:16px;">
+            <input class="control" id="statsExerciseSearch" value="${escapeHtml(state.ui.statsExerciseSearch || "")}" placeholder="Search exercise name..." autocomplete="off" />
+            <div class="plan-suggestions" id="statsExerciseSuggestions" role="listbox" aria-label="Exercise suggestions"></div>
+          </div>
+          ${selectedExercise ? `
+            <div class="selected-exercise-title" style="margin-bottom:8px; font-weight:800; color:var(--accent);">
+              ${escapeHtml(selectedExercise.name)}
+            </div>
+            ${progressChart(selectedExercise.id)}
+            ${(() => {
+              const lastLift = getLastSessionDetails(selectedExercise.id);
+              return lastLift ? `
+                <article class="item-card compact" style="margin-top: 16px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); padding: 16px;">
+                  <div class="row between" style="margin-bottom: 10px;">
+                    <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; color: var(--accent);">Last Session Lift</h4>
+                    <span class="badge" style="font-size: 0.72rem;">${formatDate(lastLift.date)}</span>
+                  </div>
+                  <div style="display: grid; gap: 8px;">
+                    ${lastLift.sets.map((set) => `
+                      <div class="row between" style="padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: 0.9rem;">
+                        <span>Set ${set.setNumber}</span>
+                        <strong>${set.actualWeight}${state.settings.unit} &times; ${set.actualReps} reps</strong>
+                      </div>
+                    `).join("")}
+                  </div>
+                  <div class="row between" style="margin-top: 10px; font-size: 0.8rem; color: var(--muted);">
+                    <span>Est. Volume:</span>
+                    <strong>${Math.round(lastLift.sets.reduce((sum, s) => sum + s.actualWeight * s.actualReps, 0))}${state.settings.unit}</strong>
+                  </div>
+                </article>
+              ` : `
+                <div class="empty-state" style="margin-top: 16px;">Is exercise ke liye pichla koi lift log nahi kiya gaya hai.</div>
+              `;
+            })()}
+          ` : `<div class="empty-state">Progress data banane ke liye pehle workout log karo.</div>`}
         </div>
       </section>
 
@@ -792,23 +842,27 @@ function renderStats() {
           ${sessions.map((session) => {
             const logs = state.logs.filter((log) => log.sessionId === session.id);
             return `
-              <article class="history-row">
-                <div>
-                  <h3>${formatDateTime(session.workoutDate)}</h3>
-                  <p class="muted">${logs.length} sets, ${Math.round(totalVolume(logs))} volume, ${session.durationMinutes || 0} min</p>
-                  ${session.notes ? `<p>${escapeHtml(session.notes)}</p>` : ""}
-                  <details>
-                    <summary>View sets</summary>
-                    <div class="card-list" style="margin-top:10px">
-                      ${logs.map((log) => {
-                        const exercise = exerciseById(log.exerciseId);
-                        return `<div class="item-card compact"><strong>${escapeHtml(exercise?.name || "Exercise")}</strong><p class="muted">Set ${log.setNumber}: ${log.actualWeight}${state.settings.unit} x ${log.actualReps}</p></div>`;
-                      }).join("")}
-                    </div>
-                  </details>
+              <div class="swipe-container">
+                <div class="swipe-actions">
+                  <button class="swipe-delete-btn" type="button" data-delete-session="${session.id}">Delete</button>
                 </div>
-                <span class="badge">${escapeHtml(session.splitName || "Session")}</span>
-              </article>
+                <article class="history-row swipe-content">
+                  <div>
+                    <h3>${formatDateTime(session.workoutDate)}</h3>
+                    <p class="muted">${logs.length} sets, ${Math.round(totalVolume(logs))} volume, ${session.durationMinutes || 0} min</p>
+                    ${session.notes ? `<p>${escapeHtml(session.notes)}</p>` : ""}
+                    <details>
+                      <summary>View sets</summary>
+                      <div class="card-list" style="margin-top:10px">
+                        ${logs.map((log) => {
+                          const exercise = exerciseById(log.exerciseId);
+                          return `<div class="item-card compact"><strong>${escapeHtml(exercise?.name || "Exercise")}</strong><p class="muted">Set ${log.setNumber}: ${log.actualWeight}${state.settings.unit} x ${log.actualReps}</p></div>`;
+                        }).join("")}
+                      </div>
+                    </details>
+                  </div>
+                </article>
+              </div>
             `;
           }).join("")}
         </div>
@@ -1153,10 +1207,77 @@ function attachStatsHandlers(view) {
   const select = view.querySelector("#statsExercise");
   if (select) {
     select.addEventListener("change", () => {
-      state.ui.statsExerciseId = Number(select.value);
+      const id = Number(select.value);
+      state.ui.statsExerciseId = id;
+      const exercise = exerciseById(id);
+      state.ui.statsExerciseSearch = exercise ? exercise.name : "";
       render();
     });
   }
+
+  const exerciseSearch = view.querySelector("#statsExerciseSearch");
+  const suggestions = view.querySelector("#statsExerciseSuggestions");
+  const closeSuggestions = () => {
+    if (!suggestions) return;
+    suggestions.classList.remove("show");
+    suggestions.innerHTML = "";
+  };
+  const showSuggestions = () => {
+    if (!exerciseSearch || !suggestions) return;
+    const query = exerciseSearch.value.trim().toLowerCase();
+    const matches = state.exercises
+      .filter((exercise) => {
+        const haystack = `${exercise.name} ${exercise.muscleGroup} ${exercise.equipment}`.toLowerCase();
+        return !query || haystack.includes(query);
+      })
+      .slice(0, 8);
+
+    if (!matches.length) {
+      closeSuggestions();
+      return;
+    }
+
+    suggestions.innerHTML = matches.map((exercise) => `
+      <button class="plan-suggestion" type="button" data-exercise-id="${exercise.id}" data-exercise-name="${escapeHtml(exercise.name)}">
+        <strong>${escapeHtml(exercise.name)}</strong>
+        <span>${escapeHtml(exercise.muscleGroup)} - ${escapeHtml(exercise.equipment)}</span>
+      </button>
+    `).join("");
+    suggestions.classList.add("show");
+  };
+
+  if (exerciseSearch) {
+    exerciseSearch.addEventListener("focus", showSuggestions);
+    exerciseSearch.addEventListener("input", () => {
+      state.ui.statsExerciseSearch = exerciseSearch.value;
+      showSuggestions();
+    });
+    exerciseSearch.addEventListener("blur", () => setTimeout(closeSuggestions, 160));
+  }
+
+  suggestions?.addEventListener("mousedown", (event) => {
+    const button = event.target.closest("[data-exercise-id]");
+    if (!button || !exerciseSearch) return;
+    event.preventDefault();
+    const id = Number(button.dataset.exerciseId);
+    const name = button.dataset.exerciseName;
+    state.ui.statsExerciseId = id;
+    state.ui.statsExerciseSearch = name;
+    exerciseSearch.value = name;
+    closeSuggestions();
+    render();
+  });
+
+  view.querySelectorAll("[data-delete-session]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = Number(button.dataset.deleteSession);
+      if (!confirm("Delete this workout session?")) return;
+      state.sessions = state.sessions.filter((session) => session.id !== id);
+      state.logs = state.logs.filter((log) => log.sessionId !== id);
+      toast("Workout session deleted");
+      render();
+    });
+  });
 }
 
 function attachSettingsHandlers(view) {
@@ -1386,6 +1507,29 @@ function applySplitToPlans(targetState, splitId, replace) {
   }
 }
 
+function getLastSessionDetails(exerciseId) {
+  const exerciseLogs = state.logs.filter((log) => Number(log.exerciseId) === Number(exerciseId));
+  if (!exerciseLogs.length) return null;
+
+  const logsWithDates = exerciseLogs.map((log) => {
+    const session = state.sessions.find((s) => s.id === log.sessionId);
+    return { log, date: session ? session.workoutDate : 0 };
+  }).filter((item) => item.date > 0);
+
+  if (!logsWithDates.length) return null;
+
+  const latestDate = Math.max(...logsWithDates.map(item => item.date));
+  const latestLogs = logsWithDates
+    .filter(item => item.date === latestDate)
+    .map(item => item.log)
+    .sort((a, b) => a.setNumber - b.setNumber);
+
+  return {
+    date: latestDate,
+    sets: latestLogs
+  };
+}
+
 function personalBestRows() {
   const map = new Map();
   state.logs.forEach((log) => {
@@ -1442,6 +1586,145 @@ function progressChart(exerciseId) {
   `;
 }
 
+let swipeStart = { x: 0, y: 0 };
+let currentSwipeElement = null;
+let currentSwipeContainer = null;
+let isSwipeDragging = false;
+const swipeOpenOffset = -90; // 90px translation to show Delete button
+
+function initSwipeToDelete() {
+  const view = document.getElementById("view");
+  if (!view) return;
+
+  const closeOtherSwipes = (current) => {
+    view.querySelectorAll('.swipe-container[data-swipe-open="true"]').forEach((openContainer) => {
+      if (openContainer !== current) {
+        const openContent = openContainer.querySelector(".swipe-content");
+        if (openContent) {
+          openContent.style.transition = "transform 0.15s ease-out";
+          openContent.style.transform = "translateX(0)";
+        }
+        openContainer.dataset.swipeOpen = "false";
+      }
+    });
+  };
+
+  // Touch Handlers
+  view.addEventListener("touchstart", (e) => {
+    const interactive = e.target.closest("button, summary, a, input, select, option, textarea");
+    if (interactive) return;
+
+    const content = e.target.closest(".swipe-content");
+    if (!content) return;
+
+    currentSwipeElement = content;
+    currentSwipeContainer = content.closest(".swipe-container");
+    swipeStart.x = e.touches[0].clientX;
+    swipeStart.y = e.touches[0].clientY;
+    isSwipeDragging = true;
+    currentSwipeElement.style.transition = "none";
+
+    closeOtherSwipes(currentSwipeContainer);
+  }, { passive: true });
+
+  view.addEventListener("touchmove", (e) => {
+    if (!isSwipeDragging || !currentSwipeElement) return;
+    const diffX = e.touches[0].clientX - swipeStart.x;
+    const diffY = e.touches[0].clientY - swipeStart.y;
+
+    // If scrolling vertically, cancel swipe drag
+    if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffX) < 10) {
+      isSwipeDragging = false;
+      currentSwipeElement.style.transition = "transform 0.15s ease-out";
+      currentSwipeElement.style.transform = "";
+      return;
+    }
+
+    const isAlreadyOpen = currentSwipeContainer?.dataset.swipeOpen === "true";
+    let translateX = diffX + (isAlreadyOpen ? swipeOpenOffset : 0);
+
+    if (translateX < 0) {
+      translateX = Math.max(swipeOpenOffset - 20, translateX);
+      currentSwipeElement.style.transform = `translateX(${translateX}px)`;
+    } else {
+      translateX = Math.min(0, translateX);
+      currentSwipeElement.style.transform = `translateX(${translateX}px)`;
+    }
+  }, { passive: true });
+
+  view.addEventListener("touchend", () => {
+    if (!isSwipeDragging || !currentSwipeElement) return;
+    isSwipeDragging = false;
+    currentSwipeElement.style.transition = "transform 0.15s ease-out";
+
+    const transform = currentSwipeElement.style.transform;
+    const match = transform.match(/translateX\((-?\d+(?:\.\d+)?)px\)/);
+    const currentX = match ? parseFloat(match[1]) : 0;
+
+    if (currentX < swipeOpenOffset / 2) {
+      currentSwipeElement.style.transform = `translateX(${swipeOpenOffset}px)`;
+      if (currentSwipeContainer) currentSwipeContainer.dataset.swipeOpen = "true";
+    } else {
+      currentSwipeElement.style.transform = "translateX(0)";
+      if (currentSwipeContainer) currentSwipeContainer.dataset.swipeOpen = "false";
+    }
+  });
+
+  // Mouse Handlers
+  view.addEventListener("mousedown", (e) => {
+    const interactive = e.target.closest("button, summary, a, input, select, option, textarea");
+    if (interactive) return;
+
+    const content = e.target.closest(".swipe-content");
+    if (!content) return;
+
+    currentSwipeElement = content;
+    currentSwipeContainer = content.closest(".swipe-container");
+    swipeStart.x = e.clientX;
+    swipeStart.y = e.clientY;
+    isSwipeDragging = true;
+    currentSwipeElement.style.transition = "none";
+
+    closeOtherSwipes(currentSwipeContainer);
+  });
+
+  view.addEventListener("mousemove", (e) => {
+    if (!isSwipeDragging || !currentSwipeElement) return;
+    const diffX = e.clientX - swipeStart.x;
+    const isAlreadyOpen = currentSwipeContainer?.dataset.swipeOpen === "true";
+    let translateX = diffX + (isAlreadyOpen ? swipeOpenOffset : 0);
+
+    if (translateX < 0) {
+      translateX = Math.max(swipeOpenOffset - 20, translateX);
+      currentSwipeElement.style.transform = `translateX(${translateX}px)`;
+    } else {
+      translateX = Math.min(0, translateX);
+      currentSwipeElement.style.transform = `translateX(${translateX}px)`;
+    }
+  });
+
+  const handleMouseUp = () => {
+    if (!isSwipeDragging || !currentSwipeElement) return;
+    isSwipeDragging = false;
+    currentSwipeElement.style.transition = "transform 0.15s ease-out";
+
+    const transform = currentSwipeElement.style.transform;
+    const match = transform.match(/translateX\((-?\d+(?:\.\d+)?)px\)/);
+    const currentX = match ? parseFloat(match[1]) : 0;
+
+    if (currentX < swipeOpenOffset / 2) {
+      currentSwipeElement.style.transform = `translateX(${swipeOpenOffset}px)`;
+      if (currentSwipeContainer) currentSwipeContainer.dataset.swipeOpen = "true";
+    } else {
+      currentSwipeElement.style.transform = "translateX(0)";
+      if (currentSwipeContainer) currentSwipeContainer.dataset.swipeOpen = "false";
+    }
+  };
+
+  view.addEventListener("mouseup", handleMouseUp);
+  view.addEventListener("mouseleave", handleMouseUp);
+}
+
 function toast(message) {
   const element = document.getElementById("toast");
   element.textContent = message;
@@ -1454,6 +1737,7 @@ document.querySelectorAll(".bottom-tab").forEach((button) => {
   button.addEventListener("click", () => setRoute(button.dataset.route));
 });
 
+initSwipeToDelete();
 render();
 
 if (window.GRAVITAS_FIREBASE?.connect) {

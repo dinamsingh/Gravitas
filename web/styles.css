@@ -811,7 +811,7 @@ textarea.control {
     rgba(255, 255, 255, 0.035);
 }
 
-.plan-custom-form > div,
+.plan-custom-form>div,
 .plan-custom-form .wide {
   grid-column: span 2;
 }
@@ -930,6 +930,51 @@ textarea.control {
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
+/* Swipe to Delete Styles */
+.swipe-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  user-select: none;
+}
+
+.swipe-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  z-index: 1;
+}
+
+.swipe-delete-btn {
+  border: 0;
+  background: var(--heat);
+  color: white;
+  font-weight: 850;
+  padding: 0 24px;
+  font-size: 0.9rem;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.swipe-content {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.15s ease-out;
+  background: var(--panel-strong) !important;
+  will-change: transform;
+}
+
+[data-theme="light"] .swipe-content {
+  background: var(--panel-strong) !important;
+}
+
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--line);
@@ -1008,7 +1053,7 @@ tr:last-child td {
     grid-template-columns: 1fr;
   }
 
-  .plan-custom-form > div,
+  .plan-custom-form>div,
   .plan-custom-form .wide {
     grid-column: auto;
   }
@@ -1101,7 +1146,7 @@ tr:last-child td {
   }
 
   .hero-copy .button,
-  .panel > .row .button {
+  .panel>.row .button {
     flex: 1 1 145px;
   }
 
