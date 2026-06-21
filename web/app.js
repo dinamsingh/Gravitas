@@ -791,22 +791,22 @@ function renderStats() {
             ${(() => {
               const lastLift = getLastSessionDetails(selectedExercise.id);
               return lastLift ? `
-                <article class="item-card compact" style="margin-top: 16px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); padding: 16px;">
+                <article class="item-card compact" style="margin-top: 16px; border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--panel-strong); padding: 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);">
                   <div class="row between" style="margin-bottom: 10px;">
                     <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; color: var(--accent);">Last Session Lift</h4>
-                    <span class="badge" style="font-size: 0.72rem;">${formatDate(lastLift.date)}</span>
+                    <span class="badge" style="font-size: 0.72rem; background: rgba(255, 255, 255, 0.08); color: var(--ink);">${formatDate(lastLift.date)}</span>
                   </div>
                   <div style="display: grid; gap: 8px;">
                     ${lastLift.sets.map((set) => `
                       <div class="row between" style="padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: 0.9rem;">
-                        <span>Set ${set.setNumber}</span>
-                        <strong>${set.actualWeight}${state.settings.unit} &times; ${set.actualReps} reps</strong>
+                        <span style="color: var(--muted);">Set ${set.setNumber}</span>
+                        <strong style="color: var(--ink);">${set.actualWeight}${state.settings.unit} &times; ${set.actualReps} reps</strong>
                       </div>
                     `).join("")}
                   </div>
-                  <div class="row between" style="margin-top: 10px; font-size: 0.8rem; color: var(--muted);">
-                    <span>Est. Volume:</span>
-                    <strong>${Math.round(lastLift.sets.reduce((sum, s) => sum + s.actualWeight * s.actualReps, 0))}${state.settings.unit}</strong>
+                  <div class="row between" style="margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted);">
+                    <span>Total Volume:</span>
+                    <strong style="color: var(--accent);">${Math.round(lastLift.sets.reduce((sum, s) => sum + s.actualWeight * s.actualReps, 0))}${state.settings.unit}</strong>
                   </div>
                 </article>
               ` : `
