@@ -647,6 +647,11 @@ h3 {
   gap: 12px;
 }
 
+.profile-layout {
+  display: grid;
+  max-width: 720px;
+}
+
 .metric {
   padding: 16px;
   border: 1px solid var(--line);

@@ -756,7 +756,7 @@ function renderStats() {
   const rows = personalBestRows();
   if (!state.ui.statsExerciseId && rows.length) state.ui.statsExerciseId = rows[0].exerciseId;
   const selectedExercise = exerciseById(state.ui.statsExerciseId);
-  const recentSessions = [...state.sessions].sort((a, b) => b.workoutDate - a.workoutDate).slice(0, 5);
+  const sessions = [...state.sessions].sort((a, b) => b.workoutDate - a.workoutDate);
 
   return `
     <div class="grid two">
@@ -801,38 +801,44 @@ function renderStats() {
 
     <section class="panel" style="margin-top:16px">
       <div class="row between" style="margin-bottom:12px">
-        <h3>Recent Sessions</h3>
-        <span class="badge">${recentSessions.length} shown</span>
+        <h3>Workout History</h3>
+        <span class="badge">${sessions.length} total</span>
       </div>
-      ${recentSessions.length ? `
+      ${sessions.length ? `
         <div class="card-list">
-          ${recentSessions.map((session) => {
+          ${sessions.map((session) => {
             const logs = state.logs.filter((log) => log.sessionId === session.id);
             return `
               <article class="history-row">
                 <div>
-                  <strong>${formatDateTime(session.workoutDate)}</strong>
+                  <h3>${formatDateTime(session.workoutDate)}</h3>
                   <p class="muted">${logs.length} sets, ${Math.round(totalVolume(logs))} volume, ${session.durationMinutes || 0} min</p>
+                  ${session.notes ? `<p>${escapeHtml(session.notes)}</p>` : ""}
+                  <details>
+                    <summary>View sets</summary>
+                    <div class="card-list" style="margin-top:10px">
+                      ${logs.map((log) => {
+                        const exercise = exerciseById(log.exerciseId);
+                        return `<div class="item-card compact"><strong>${escapeHtml(exercise?.name || "Exercise")}</strong><p class="muted">Set ${log.setNumber}: ${log.actualWeight}${state.settings.unit} x ${log.actualReps}</p></div>`;
+                      }).join("")}
+                    </div>
+                  </details>
                 </div>
                 <span class="badge">${escapeHtml(session.splitName || "Session")}</span>
               </article>
             `;
           }).join("")}
         </div>
-      ` : `<div class="empty-state">No recent sessions yet.</div>`}
+      ` : `<div class="empty-state">Workout history empty hai. Exercise finish karte hi yahan session dikhega.</div>`}
     </section>
   `;
 }
 
 function renderSettings() {
   return `
-    <div class="grid two">
+    <div class="profile-layout">
       <section class="panel">
         <h3>Profile</h3>
-        <div class="sync-card">
-          <span>Cloud Sync</span>
-          <strong id="cloudStatus">${escapeHtml(cloudStatus)}</strong>
-        </div>
         <div class="sync-card">
           <span>Logged In</span>
           <strong>${escapeHtml(authUser?.displayName || authUser?.email || "User")}</strong>
@@ -841,22 +847,10 @@ function renderSettings() {
           <label class="label">Weight Unit<select class="control" name="unit"><option ${state.settings.unit === "kg" ? "selected" : ""}>kg</option><option ${state.settings.unit === "lbs" ? "selected" : ""}>lbs</option></select></label>
           <label class="label">Theme<select class="control" name="theme"><option value="dark" ${state.settings.theme === "dark" ? "selected" : ""}>dark</option><option value="light" ${state.settings.theme === "light" ? "selected" : ""}>light</option></select></label>
           <label class="label">Default Sets<input class="control" name="defaultSets" value="${state.settings.defaultSets}" inputmode="numeric" /></label>
-          <label class="label">Rest Timer<input class="control" name="restTimer" value="${state.settings.restTimer}" inputmode="numeric" /></label>
           <button class="button primary" type="submit">Save Profile</button>
           <button class="button" type="button" data-action="logout">Logout</button>
-          <button class="button heat" type="button" data-action="reset-all">Reset Demo Data</button>
         </form>
       </section>
-
-      <aside class="panel">
-        <h3>Cloud Account</h3>
-        <p class="muted">Tumhara workout history, plans, progress aur settings Firebase me logged-in account ke saath save hote hain.</p>
-        <div class="metrics">
-          <div class="metric"><span>Sessions</span><strong>${state.sessions.length}</strong></div>
-          <div class="metric"><span>Plans</span><strong>${state.plans.length}</strong></div>
-          <div class="metric"><span>Logs</span><strong>${state.logs.length}</strong></div>
-        </div>
-      </aside>
     </div>
   `;
 }
@@ -1199,7 +1193,7 @@ function attachSettingsHandlers(view) {
       unit: data.unit,
       theme: data.theme,
       defaultSets: Math.max(1, Math.round(numberValue(data.defaultSets, 3))),
-      restTimer: Math.max(15, Math.round(numberValue(data.restTimer, 60)))
+      restTimer: state.settings.restTimer
     };
     toast("Profile saved");
     render();
