@@ -461,7 +461,7 @@ function renderHome() {
         <div class="hero-copy">
           <p class="eyebrow">Welcome to GRAVITAS</p>
           <h3>${plans.length ? "Today's lift is loaded." : "Build today's lift."}</h3>
-          <p>${plans.length ? `${plans.length} movements are ready for ${today}. Log clean sets, keep the streak alive, and let the numbers tell the truth.` : "No workout is planned for today. Open the planner, pick a split, or add exercises manually."}</p>
+          <p>${plans.length ? `${plans.length} movements are ready for ${today}. Log clean sets, keep the streak alive, and let the numbers tell the truth.` : "No workout is planned for today. Open the planner and add exercises manually."}</p>
           <div class="row">
             <button class="button primary" type="button" data-action="start-today">Start Workout</button>
             <button class="button ghost" type="button" data-action="repeat-last">Repeat Last Workout</button>
@@ -570,7 +570,7 @@ function renderPlanner() {
   const plans = state.plans.filter((plan) => plan.dayOfWeek === day).map(planWithExercise);
 
   return `
-    <div class="grid two">
+    <div class="profile-layout">
       <section class="panel">
         <div class="row between">
           <h3>Plan by Day</h3>
@@ -616,23 +616,6 @@ function renderPlanner() {
           `).join("") : `<div class="empty-state">Is din ke liye abhi koi workout plan nahi hai.</div>`}
         </div>
       </section>
-
-      <aside class="panel">
-        <h3>Workout Splits</h3>
-        <p class="muted">Split apply karne par current weekly planner replace hoga.</p>
-        <div class="card-list">
-          ${SPLIT_TEMPLATES.map((split) => `
-            <article class="item-card">
-              <div class="row between">
-                <strong>${escapeHtml(split.name)}</strong>
-                ${state.activeSplit === split.id ? `<span class="badge">Active</span>` : ""}
-              </div>
-              <p class="muted">${escapeHtml(split.summary)}</p>
-              <button class="button primary small" type="button" data-apply-split="${split.id}">Apply Split</button>
-            </article>
-          `).join("")}
-        </div>
-      </aside>
     </div>
   `;
 }
@@ -661,7 +644,7 @@ function renderWorkout() {
             <button class="button primary" type="button" data-start-day="${day}">Start ${day}</button>
             <button class="button ghost" type="button" data-action="repeat-last">Repeat Last Workout</button>
           </div>
-        ` : `<div class="empty-state">No plan for ${escapeHtml(day)}. Planner me exercise add karo ya split apply karo.</div>`}
+        ` : `<div class="empty-state">No plan for ${escapeHtml(day)}. Planner me exercise add karo.</div>`}
       </section>
     `;
   }
@@ -1094,15 +1077,6 @@ function attachPlannerHandlers(view) {
     button.addEventListener("click", () => {
       state.plans = state.plans.filter((plan) => Number(plan.id) !== Number(button.dataset.deletePlan));
       toast("Plan item removed");
-      render();
-    });
-  });
-  view.querySelectorAll("[data-apply-split]").forEach((button) => {
-    button.addEventListener("click", () => {
-      if (state.plans.length && !confirm("Apply split? Current weekly planner replace hoga.")) return;
-      applySplitToPlans(state, button.dataset.applySplit, true);
-      state.ui.selectedDay = todayName();
-      toast("Split applied to planner");
       render();
     });
   });
