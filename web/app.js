@@ -229,6 +229,8 @@ function normalizeState(value) {
       workoutDay: todayName(),
       librarySearch: "",
       libraryMuscle: "All",
+      showPlanCustomForm: false,
+      planExerciseSearch: "",
       statsExerciseId: null,
       ...(value.ui || {})
     }
@@ -580,11 +582,27 @@ function renderPlanner() {
 
         <form id="planForm" class="form-grid">
           <label class="label wide plan-search-field">Search Exercise
-            <input class="control" id="planExerciseSearch" name="exerciseName" placeholder="Search exercise name" autocomplete="off" />
+            <input class="control" id="planExerciseSearch" name="exerciseName" value="${escapeHtml(state.ui.planExerciseSearch || "")}" placeholder="Search exercise name" autocomplete="off" />
             <div class="plan-suggestions" id="planExerciseSuggestions" role="listbox" aria-label="Exercise suggestions"></div>
           </label>
           <button class="button primary" type="submit">Add Exercise</button>
+          <button class="button" type="button" data-action="toggle-plan-custom">${state.ui.showPlanCustomForm ? "Close Custom" : "Create Custom Exercise"}</button>
         </form>
+
+        ${state.ui.showPlanCustomForm ? `
+          <form id="planCustomForm" class="plan-custom-form">
+            <div>
+              <h3>Create Custom Exercise</h3>
+              <p class="muted">Exercise banao, phir ye search box me auto-select ho jayegi.</p>
+            </div>
+            <label class="label">Exercise Name<input class="control" name="name" required placeholder="e.g. Hack Squat" /></label>
+            <label class="label">Muscle<input class="control" name="muscleGroup" required placeholder="Legs" /></label>
+            <label class="label">Equipment<input class="control" name="equipment" required placeholder="Machine" /></label>
+            <label class="label">Difficulty<select class="control" name="difficulty"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></label>
+            <label class="label wide">Notes<input class="control" name="description" placeholder="Short training cue" /></label>
+            <button class="button primary" type="submit">Save Custom Exercise</button>
+          </form>
+        ` : ""}
 
         <div class="card-list" style="margin-top:16px">
           ${plans.length ? plans.map((plan) => `
@@ -649,46 +667,45 @@ function renderWorkout() {
   }
 
   const workout = state.activeWorkout;
+  const remainingExercises = workout.exercises
+    .map((item, exerciseIndex) => ({ item, exerciseIndex }))
+    .filter(({ item }) => !item.finished);
+  const completedCount = workout.exercises.length - remainingExercises.length;
   return `
     <section class="panel">
       <div class="row between">
         <div>
           <h3>${escapeHtml(workout.day)} Workout</h3>
-          <p class="muted">Started ${formatDateTime(workout.startedAt)}</p>
+          <p class="muted">Started ${formatDateTime(workout.startedAt)}${completedCount ? `, ${completedCount} finished` : ""}</p>
         </div>
         <button class="button heat" type="button" data-action="discard-workout">Discard</button>
       </div>
 
       <div class="card-list">
-        ${workout.exercises.map((item, exerciseIndex) => {
-          const isFinished = Boolean(item.finished);
-          return `
-          <article class="item-card workout-exercise ${isFinished ? "finished" : ""}">
+        ${remainingExercises.length ? remainingExercises.map(({ item, exerciseIndex }) => `
+          <article class="item-card workout-exercise">
             <div class="row between">
               <div>
                 <h3>${escapeHtml(item.name)}</h3>
                 <p class="muted">Target: ${item.targetSets} sets x ${item.targetReps} reps at ${item.targetWeight || 0}${state.settings.unit}</p>
               </div>
               <div class="row exercise-actions">
-                <button class="button small" type="button" data-add-set="${exerciseIndex}" ${isFinished ? "disabled" : ""}>Add Set</button>
-                <button class="button primary small exercise-finish" type="button" data-finish-exercise="${exerciseIndex}" ${isFinished ? "disabled" : ""}>
-                  ${isFinished ? "Finished" : "Finish"}
-                </button>
+                <button class="button small" type="button" data-add-set="${exerciseIndex}">Add Set</button>
+                <button class="button primary small exercise-finish" type="button" data-finish-exercise="${exerciseIndex}">Finish</button>
               </div>
             </div>
             <div class="card-list">
               ${item.sets.map((set, setIndex) => `
                 <div class="set-row">
                   <strong>Set ${setIndex + 1}</strong>
-                  <label class="label">Weight<input class="control" inputmode="decimal" value="${escapeHtml(set.weight)}" data-set-field="${exerciseIndex}:${setIndex}:weight" ${isFinished ? "disabled" : ""} /></label>
-                  <label class="label">Reps<input class="control" inputmode="numeric" value="${escapeHtml(set.reps)}" data-set-field="${exerciseIndex}:${setIndex}:reps" ${isFinished ? "disabled" : ""} /></label>
-                  <button class="button heat small" type="button" data-remove-set="${exerciseIndex}:${setIndex}" ${isFinished ? "disabled" : ""}>Remove</button>
+                  <label class="label">Weight<input class="control" inputmode="decimal" value="${escapeHtml(set.weight)}" data-set-field="${exerciseIndex}:${setIndex}:weight" /></label>
+                  <label class="label">Reps<input class="control" inputmode="numeric" value="${escapeHtml(set.reps)}" data-set-field="${exerciseIndex}:${setIndex}:reps" /></label>
+                  <button class="button heat small" type="button" data-remove-set="${exerciseIndex}:${setIndex}">Remove</button>
                 </div>
               `).join("")}
             </div>
           </article>
-        `;
-        }).join("")}
+        `).join("") : `<div class="empty-state">All exercises saved in this session. Finish Workout dabao to session close ho jayega.</div>`}
       </div>
 
       <label class="label" style="margin-top:16px">Workout notes<textarea class="control" id="workoutNotes" placeholder="Optional notes">${escapeHtml(workout.notes || "")}</textarea></label>
@@ -1009,7 +1026,10 @@ function attachPlannerHandlers(view) {
 
   if (exerciseSearch) {
     exerciseSearch.addEventListener("focus", showSuggestions);
-    exerciseSearch.addEventListener("input", showSuggestions);
+    exerciseSearch.addEventListener("input", () => {
+      state.ui.planExerciseSearch = exerciseSearch.value;
+      showSuggestions();
+    });
     exerciseSearch.addEventListener("blur", () => setTimeout(closeSuggestions, 160));
   }
 
@@ -1018,8 +1038,39 @@ function attachPlannerHandlers(view) {
     if (!button || !exerciseSearch) return;
     event.preventDefault();
     exerciseSearch.value = button.dataset.exerciseName;
+    state.ui.planExerciseSearch = exerciseSearch.value;
     closeSuggestions();
   });
+
+  const customForm = view.querySelector("#planCustomForm");
+  if (customForm) {
+    customForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(customForm));
+      const name = String(data.name || "").trim();
+      const muscleGroup = String(data.muscleGroup || "").trim();
+      const equipment = String(data.equipment || "").trim();
+      if (!name || !muscleGroup || !equipment) {
+        toast("Custom exercise details fill karo");
+        return;
+      }
+      const existing = exerciseByName(name);
+      const exercise = existing || {
+        id: nextId(state.exercises),
+        name,
+        muscleGroup,
+        equipment,
+        difficulty: data.difficulty,
+        description: String(data.description || "").trim() || "Custom exercise.",
+        isCustom: true
+      };
+      if (!existing) state.exercises.push(exercise);
+      state.ui.planExerciseSearch = exercise.name;
+      state.ui.showPlanCustomForm = false;
+      toast(existing ? "Exercise already selected" : "Custom exercise created");
+      render();
+    });
+  }
 
   view.querySelector("#planForm").addEventListener("submit", (event) => {
     event.preventDefault();
@@ -1041,6 +1092,7 @@ function attachPlannerHandlers(view) {
       numberOfSets: Math.max(1, Math.round(numberValue(state.settings.defaultSets, 3))),
       restSeconds: Math.max(15, Math.round(numberValue(state.settings.restTimer, 60)))
     });
+    state.ui.planExerciseSearch = "";
     toast("Exercise added to planner");
     render();
   });
@@ -1084,9 +1136,8 @@ function attachWorkoutHandlers(view) {
     button.addEventListener("click", () => {
       const item = state.activeWorkout.exercises[Number(button.dataset.finishExercise)];
       if (!item) return;
-      item.finished = true;
-      saveState();
-      toast(`${item.name} finished`);
+      saveWorkoutExercise(state.activeWorkout, item);
+      toast(`${item.name} saved to session`);
       render();
     });
   });
@@ -1111,6 +1162,7 @@ function attachWorkoutHandlers(view) {
   if (notes) {
     notes.addEventListener("input", () => {
       state.activeWorkout.notes = notes.value;
+      updateActiveSessionMetadata(state.activeWorkout);
       saveState();
     });
   }
@@ -1171,6 +1223,10 @@ function runAction(action) {
   if (action === "finish-workout") {
     finishWorkout();
   }
+  if (action === "toggle-plan-custom") {
+    state.ui.showPlanCustomForm = !state.ui.showPlanCustomForm;
+    render();
+  }
   if (action === "reset-all") {
     if (confirm("Reset all web app data?")) {
       localStorage.removeItem(STORAGE_KEY);
@@ -1202,6 +1258,7 @@ function startWorkoutFromDay(day) {
   }
   state.activeWorkout = {
     id: Date.now(),
+    sessionId: null,
     day,
     startedAt: Date.now(),
     notes: "",
@@ -1213,6 +1270,7 @@ function startWorkoutFromDay(day) {
       targetReps: plan.targetReps,
       targetSets: plan.numberOfSets,
       finished: false,
+      savedToSession: false,
       sets: Array.from({ length: Math.max(1, plan.numberOfSets) }, () => ({
         weight: plan.targetWeight || 0,
         reps: plan.targetReps || 10
@@ -1238,6 +1296,7 @@ function repeatLastWorkout() {
   });
   state.activeWorkout = {
     id: Date.now(),
+    sessionId: null,
     day: todayName(),
     startedAt: Date.now(),
     notes: "",
@@ -1251,6 +1310,7 @@ function repeatLastWorkout() {
         targetReps: setLogs[0]?.actualReps || 10,
         targetSets: setLogs.length,
         finished: false,
+        savedToSession: false,
         sets: setLogs.map((log) => ({ weight: log.actualWeight, reps: log.actualReps }))
       };
     })
@@ -1260,32 +1320,56 @@ function repeatLastWorkout() {
   render();
 }
 
+function updateActiveSessionMetadata(workout) {
+  if (!workout?.sessionId) return null;
+  const session = state.sessions.find((item) => item.id === workout.sessionId);
+  if (!session) return null;
+  session.notes = workout.notes || "";
+  session.durationMinutes = Math.max(1, Math.round((Date.now() - workout.startedAt) / 60000));
+  return session;
+}
+
+function ensureActiveWorkoutSession(workout) {
+  if (workout.sessionId) return updateActiveSessionMetadata(workout);
+
+  const sessionId = nextId(state.sessions);
+  workout.sessionId = sessionId;
+  const session = {
+    id: sessionId,
+    workoutDate: Date.now(),
+    notes: workout.notes || "",
+    splitName: SPLIT_TEMPLATES.find((split) => split.id === state.activeSplit)?.name || workout.day || "Session",
+    durationMinutes: Math.max(1, Math.round((Date.now() - workout.startedAt) / 60000))
+  };
+  state.sessions.push(session);
+  return session;
+}
+
+function saveWorkoutExercise(workout, exercise) {
+  if (!workout || !exercise || exercise.savedToSession) return;
+
+  const session = ensureActiveWorkoutSession(workout);
+  exercise.sets.forEach((set, index) => {
+    state.logs.push({
+      id: nextId(state.logs),
+      sessionId: session.id,
+      exerciseId: Number(exercise.exerciseId),
+      setNumber: index + 1,
+      actualWeight: numberValue(set.weight),
+      actualReps: Math.max(0, Math.round(numberValue(set.reps)))
+    });
+  });
+  exercise.finished = true;
+  exercise.savedToSession = true;
+  updateActiveSessionMetadata(workout);
+}
+
 function finishWorkout() {
   const workout = state.activeWorkout;
   if (!workout) return;
 
-  const sessionId = nextId(state.sessions);
-  const durationMinutes = Math.max(1, Math.round((Date.now() - workout.startedAt) / 60000));
-  state.sessions.push({
-    id: sessionId,
-    workoutDate: Date.now(),
-    notes: workout.notes || "",
-    splitName: SPLIT_TEMPLATES.find((split) => split.id === state.activeSplit)?.name || "",
-    durationMinutes
-  });
-
-  workout.exercises.forEach((exercise) => {
-    exercise.sets.forEach((set, index) => {
-      state.logs.push({
-        id: nextId(state.logs),
-        sessionId,
-        exerciseId: Number(exercise.exerciseId),
-        setNumber: index + 1,
-        actualWeight: numberValue(set.weight),
-        actualReps: Math.max(0, Math.round(numberValue(set.reps)))
-      });
-    });
-  });
+  workout.exercises.forEach((exercise) => saveWorkoutExercise(workout, exercise));
+  updateActiveSessionMetadata(workout);
 
   state.activeWorkout = null;
   state.ui.route = "history";
