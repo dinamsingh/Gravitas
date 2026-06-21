@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="GRAVITAS">
+  <rect width="512" height="512" rx="96" fill="#11130f"/>
+  <path d="M92 157h328v54H92zM124 301h264v54H124z" fill="#d8ff43"/>
+  <path d="M168 92h54v328h-54zM290 92h54v328h-54z" fill="#f7f3e8"/>
+  <path d="M129 421 256 91l127 330h-61l-20-58h-92l-20 58h-61Zm100-111h54l-27-81-27 81Z" fill="#81d8f7" opacity=".9"/>
+</svg>
