@@ -682,7 +682,13 @@ function renderWorkout() {
               ${item.sets.map((set, setIndex) => `
                 <div class="set-row">
                   <strong>Set ${setIndex + 1}</strong>
-                  <label class="label">Weight<input class="control" inputmode="decimal" value="${escapeHtml(set.weight)}" data-set-field="${exerciseIndex}:${setIndex}:weight" /></label>
+                  <label class="label" style="width: 100%;">Weight
+                    <div class="weight-control-group" style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                      <button class="button weight-adjust-btn" type="button" data-weight-adjust="-2.5" data-set-index="${exerciseIndex}:${setIndex}" style="flex: 0 0 44px; height: 44px; padding: 0; font-size: 1.25rem; font-weight: 800;">&minus;</button>
+                      <input class="control" inputmode="decimal" value="${escapeHtml(set.weight)}" data-set-field="${exerciseIndex}:${setIndex}:weight" style="flex: 1; text-align: center; margin: 0;" />
+                      <button class="button weight-adjust-btn" type="button" data-weight-adjust="2.5" data-set-index="${exerciseIndex}:${setIndex}" style="flex: 0 0 44px; height: 44px; padding: 0; font-size: 1.25rem; font-weight: 800;">+</button>
+                    </div>
+                  </label>
                   <label class="label">Reps<input class="control" inputmode="numeric" value="${escapeHtml(set.reps)}" data-set-field="${exerciseIndex}:${setIndex}:reps" /></label>
                   <button class="button heat small" type="button" data-remove-set="${exerciseIndex}:${setIndex}">Remove</button>
                 </div>
@@ -1178,6 +1184,23 @@ function attachWorkoutHandlers(view) {
       if (state.activeWorkout.exercises[Number(exerciseIndex)].finished) return;
       state.activeWorkout.exercises[Number(exerciseIndex)].sets[Number(setIndex)][field] = input.value;
       saveState();
+    });
+  });
+  view.querySelectorAll(".weight-adjust-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      const adjust = parseFloat(button.dataset.weightAdjust);
+      const [exerciseIndex, setIndex] = button.dataset.setIndex.split(":").map(Number);
+      if (state.activeWorkout.exercises[exerciseIndex].finished) return;
+      const input = view.querySelector(`[data-set-field="${exerciseIndex}:${setIndex}:weight"]`);
+      if (input) {
+        let currentWeight = parseFloat(input.value) || 0;
+        currentWeight += adjust;
+        if (currentWeight < 0) currentWeight = 0;
+        const formattedWeight = Number(currentWeight.toFixed(2));
+        input.value = formattedWeight;
+        state.activeWorkout.exercises[exerciseIndex].sets[setIndex].weight = formattedWeight;
+        saveState();
+      }
     });
   });
   const notes = view.querySelector("#workoutNotes");

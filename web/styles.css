@@ -922,7 +922,7 @@ textarea.control {
 }
 
 .set-row {
-  grid-template-columns: 90px repeat(2, minmax(90px, 1fr)) auto;
+  grid-template-columns: 90px minmax(160px, 1.5fr) minmax(90px, 1fr) auto;
   align-items: center;
 }
 
