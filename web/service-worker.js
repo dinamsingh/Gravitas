@@ -1,4 +1,4 @@
-const CACHE_NAME = "gravitas-phone-v23";
+const CACHE_NAME = "gravitas-phone-v25";
 const APP_SHELL = [
   "./",
   "./index.html",

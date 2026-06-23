@@ -683,10 +683,12 @@ function renderWorkout() {
                 <div class="set-row">
                   <strong>Set ${setIndex + 1}</strong>
                   <label class="label" style="width: 100%;">Weight
-                    <div class="weight-control-group" style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
-                      <button class="button weight-adjust-btn" type="button" data-weight-adjust="-2.5" data-set-index="${exerciseIndex}:${setIndex}" style="flex: 0 0 44px; height: 44px; padding: 0; font-size: 1.25rem; font-weight: 800;">&minus;</button>
-                      <input class="control" inputmode="decimal" value="${escapeHtml(set.weight)}" data-set-field="${exerciseIndex}:${setIndex}:weight" style="flex: 1; text-align: center; margin: 0;" />
-                      <button class="button weight-adjust-btn" type="button" data-weight-adjust="2.5" data-set-index="${exerciseIndex}:${setIndex}" style="flex: 0 0 44px; height: 44px; padding: 0; font-size: 1.25rem; font-weight: 800;">+</button>
+                    <div class="weight-control-group">
+                      <input class="control weight-input" inputmode="decimal" value="${escapeHtml(set.weight)}" data-set-field="${exerciseIndex}:${setIndex}:weight" aria-label="Weight for set ${setIndex + 1}" />
+                      <div class="weight-stepper" aria-label="Adjust weight">
+                        <button class="weight-adjust-btn" type="button" data-weight-adjust="-2.5" data-set-index="${exerciseIndex}:${setIndex}" aria-label="Decrease weight">&minus;</button>
+                        <button class="weight-adjust-btn" type="button" data-weight-adjust="2.5" data-set-index="${exerciseIndex}:${setIndex}" aria-label="Increase weight">+</button>
+                      </div>
                     </div>
                   </label>
                   <label class="label">Reps<input class="control" inputmode="numeric" value="${escapeHtml(set.reps)}" data-set-field="${exerciseIndex}:${setIndex}:reps" /></label>
@@ -1113,11 +1115,13 @@ function attachPlannerHandlers(view) {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(event.currentTarget));
     const query = String(data.exerciseName || "").trim().toLowerCase();
-    const exercise =
-      state.exercises.find((item) => item.name.toLowerCase() === query) ||
-      state.exercises.find((item) => item.name.toLowerCase().includes(query));
+    if (!query) {
+      toast("Add Exercise ke liye pehle exercise select karo");
+      return;
+    }
+    const exercise = state.exercises.find((item) => item.name.toLowerCase() === query);
     if (!exercise) {
-      toast("Exercise search se select karo");
+      toast("Search dropdown se exercise select karo");
       return;
     }
     state.plans.push({
