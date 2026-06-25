@@ -49,6 +49,18 @@
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <div id="deleteModal" class="delete-modal-overlay" aria-hidden="true">
+      <div class="delete-modal">
+        <div class="delete-modal-icon">🗑️</div>
+        <h3>Delete Workout?</h3>
+        <p class="muted">Ye workout session permanently delete ho jayega. Isko wapas nahi la sakte.</p>
+        <div class="delete-modal-actions">
+          <button class="button" id="deleteModalCancel" type="button">Cancel</button>
+          <button class="button heat" id="deleteModalConfirm" type="button">Delete</button>
+        </div>
+      </div>
+    </div>
     <script src="./data.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>

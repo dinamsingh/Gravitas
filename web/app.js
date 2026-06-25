@@ -1392,17 +1392,106 @@ function attachWorkoutHandlers(view) {
   }
 }
 
-function attachHistoryHandlers(view) {
+let _deleteModalResolve = null;
+
+function showDeleteModal() {
+  return new Promise((resolve) => {
+    _deleteModalResolve = resolve;
+    const modal = document.getElementById("deleteModal");
+    modal.setAttribute("aria-hidden", "false");
+    modal.classList.add("show");
+
+    document.getElementById("deleteModalConfirm").onclick = () => {
+      hideDeleteModal();
+      resolve(true);
+    };
+    document.getElementById("deleteModalCancel").onclick = () => {
+      hideDeleteModal();
+      resolve(false);
+    };
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        hideDeleteModal();
+        resolve(false);
+      }
+    }, { once: true });
+  });
+}
+
+function hideDeleteModal() {
+  const modal = document.getElementById("deleteModal");
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden", "true");
+  _deleteModalResolve = null;
+}
+
+function deleteSessionById(id) {
+  state.sessions = state.sessions.filter((session) => session.id !== id);
+  state.logs = state.logs.filter((log) => log.sessionId !== id);
+  toast("Workout session deleted");
+  render();
+}
+
+function attachLongPressDelete(view) {
   view.querySelectorAll("[data-delete-session]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const id = Number(button.dataset.deleteSession);
-      if (!confirm("Delete this workout session?")) return;
-      state.sessions = state.sessions.filter((session) => session.id !== id);
-      state.logs = state.logs.filter((log) => log.sessionId !== id);
-      toast("Workout session deleted");
-      render();
+    let holdTimer = null;
+    let holdComplete = false;
+
+    const startHold = (e) => {
+      e.preventDefault();
+      holdComplete = false;
+      button.classList.add("hold-active");
+      holdTimer = setTimeout(async () => {
+        holdComplete = true;
+        button.classList.remove("hold-active");
+        button.classList.add("hold-done");
+
+        // Vibrate on mobile if supported
+        if (navigator.vibrate) navigator.vibrate(50);
+
+        const confirmed = await showDeleteModal();
+        button.classList.remove("hold-done");
+        if (confirmed) {
+          deleteSessionById(Number(button.dataset.deleteSession));
+        }
+      }, 3000);
+    };
+
+    const cancelHold = () => {
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+        holdTimer = null;
+      }
+      button.classList.remove("hold-active");
+      if (!holdComplete) {
+        button.classList.remove("hold-done");
+      }
+    };
+
+    // Touch events
+    button.addEventListener("touchstart", startHold, { passive: false });
+    button.addEventListener("touchend", cancelHold);
+    button.addEventListener("touchcancel", cancelHold);
+    button.addEventListener("touchmove", cancelHold);
+
+    // Mouse events
+    button.addEventListener("mousedown", startHold);
+    button.addEventListener("mouseup", cancelHold);
+    button.addEventListener("mouseleave", cancelHold);
+
+    // Block normal click
+    button.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!holdComplete) {
+        toast("3 second hold karo delete karne ke liye");
+      }
     });
   });
+}
+
+function attachHistoryHandlers(view) {
+  attachLongPressDelete(view);
 }
 
 function attachStatsHandlers(view) {
@@ -1470,16 +1559,7 @@ function attachStatsHandlers(view) {
     render();
   });
 
-  view.querySelectorAll("[data-delete-session]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const id = Number(button.dataset.deleteSession);
-      if (!confirm("Delete this workout session?")) return;
-      state.sessions = state.sessions.filter((session) => session.id !== id);
-      state.logs = state.logs.filter((log) => log.sessionId !== id);
-      toast("Workout session deleted");
-      render();
-    });
-  });
+  attachLongPressDelete(view);
 }
 
 function attachSettingsHandlers(view) {
