@@ -233,6 +233,9 @@ function normalizeState(value) {
       planExerciseSearch: "",
       statsExerciseId: null,
       statsExerciseSearch: "",
+      freestyleSearch: "",
+      freestyleMuscle: "All",
+      freestyleSelected: [],
       ...(value.ui || {})
     }
   };
@@ -463,8 +466,9 @@ function renderHome() {
           <p class="eyebrow">Welcome to GRAVITAS</p>
           <h3>${plans.length ? "Today's lift is loaded." : "Build today's lift."}</h3>
           <p>${plans.length ? `${plans.length} movements are ready for ${today}. Log clean sets, keep the streak alive, and let the numbers tell the truth.` : "No workout is planned for today. Open the planner and add exercises manually."}</p>
-          <div class="row">
+          <div class="row" style="flex-wrap:wrap;gap:10px">
             <button class="button primary" type="button" data-action="start-today">Start Workout</button>
+            <button class="button accent" type="button" data-action="start-freestyle">Start Without Plan</button>
             <button class="button ghost" type="button" data-action="repeat-last">Repeat Last Workout</button>
           </div>
         </div>
@@ -621,7 +625,157 @@ function renderPlanner() {
   `;
 }
 
+function renderFreestylePicker() {
+  const search = (state.ui.freestyleSearch || "").toLowerCase();
+  const muscle = state.ui.freestyleMuscle || "All";
+  const selected = state.ui.freestyleSelected || [];
+  const exercises = state.exercises
+    .filter((exercise) => muscle === "All" || exercise.muscleGroup === muscle)
+    .filter((exercise) => {
+      const haystack = `${exercise.name} ${exercise.muscleGroup} ${exercise.equipment}`.toLowerCase();
+      return haystack.includes(search);
+    });
+
+  return `
+    <section class="panel">
+      <div class="row between" style="margin-bottom:12px">
+        <div>
+          <h3>Pick Your Exercises</h3>
+          <p class="muted">Apne workout ke liye exercises select karo. Phir weight aur reps add karo.</p>
+        </div>
+        <button class="button ghost small" type="button" data-action="cancel-freestyle">Cancel</button>
+      </div>
+
+      <div class="toolbar" style="margin-bottom:12px">
+        <input class="control" id="freestyleSearch" style="max-width:360px" value="${escapeHtml(state.ui.freestyleSearch || "")}" placeholder="Search by name, muscle, or equipment" />
+        <select class="control" id="freestyleMuscle" style="max-width:240px">
+          ${muscleGroups().map((group) => `<option value="${escapeHtml(group)}" ${group === muscle ? "selected" : ""}>${escapeHtml(group)}</option>`).join("")}
+        </select>
+      </div>
+
+      ${selected.length ? `
+        <div style="margin-bottom:16px">
+          <div class="row between" style="margin-bottom:8px">
+            <h4 style="margin:0;color:var(--accent)">Selected (${selected.length})</h4>
+            <button class="button heat small" type="button" data-action="clear-freestyle-selection">Clear All</button>
+          </div>
+          <div class="chip-row" style="flex-wrap:wrap;gap:8px">
+            ${selected.map((id) => {
+              const ex = exerciseById(id);
+              return ex ? `<span class="badge freestyle-selected-chip" style="cursor:pointer;padding:6px 12px;font-size:0.85rem" data-deselect-exercise="${id}">${escapeHtml(ex.name)} ✕</span>` : "";
+            }).join("")}
+          </div>
+        </div>
+        <button class="button primary" type="button" data-action="launch-freestyle" style="margin-bottom:16px;width:100%">Start Workout with ${selected.length} Exercise${selected.length > 1 ? "s" : ""}</button>
+      ` : ""}
+
+      <div class="exercise-grid freestyle-grid">
+        ${exercises.map((exercise) => {
+          const isSelected = selected.includes(exercise.id);
+          return `
+            <article class="item-card freestyle-pick ${isSelected ? "freestyle-active" : ""}" data-toggle-exercise="${exercise.id}" style="cursor:pointer;transition:all 0.2s ease">
+              <div class="row between">
+                <span class="badge">${escapeHtml(exercise.muscleGroup)}</span>
+                ${isSelected ? '<span class="badge" style="background:var(--accent);color:#000">✓ Selected</span>' : ''}
+              </div>
+              <h3>${escapeHtml(exercise.name)}</h3>
+              <p class="muted">${escapeHtml(exercise.description)}</p>
+              <div class="row">
+                <span class="badge">${escapeHtml(exercise.equipment)}</span>
+                <span class="badge">${escapeHtml(exercise.difficulty)}</span>
+              </div>
+            </article>
+          `;
+        }).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function attachFreestyleHandlers(view) {
+  const searchInput = view.querySelector("#freestyleSearch");
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      state.ui.freestyleSearch = e.target.value;
+      state.ui._keepFreestyleFocus = true;
+      render();
+    });
+  }
+  const muscleSelect = view.querySelector("#freestyleMuscle");
+  if (muscleSelect) {
+    muscleSelect.addEventListener("change", (e) => {
+      state.ui.freestyleMuscle = e.target.value;
+      render();
+    });
+  }
+  view.querySelectorAll("[data-toggle-exercise]").forEach((card) => {
+    card.addEventListener("click", (e) => {
+      if (e.target.closest("button")) return;
+      const id = Number(card.dataset.toggleExercise);
+      const list = state.ui.freestyleSelected || [];
+      const idx = list.indexOf(id);
+      if (idx >= 0) {
+        list.splice(idx, 1);
+      } else {
+        list.push(id);
+      }
+      state.ui.freestyleSelected = list;
+      render();
+    });
+  });
+  view.querySelectorAll("[data-deselect-exercise]").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const id = Number(chip.dataset.deselectExercise);
+      state.ui.freestyleSelected = (state.ui.freestyleSelected || []).filter((i) => i !== id);
+      render();
+    });
+  });
+}
+
+function startFreestyleWorkout() {
+  const selected = state.ui.freestyleSelected || [];
+  if (!selected.length) {
+    toast("Pehle exercises select karo");
+    return;
+  }
+  const defaultSets = Math.max(1, Math.round(numberValue(state.settings.defaultSets, 3)));
+  state.activeWorkout = {
+    id: Date.now(),
+    sessionId: null,
+    day: todayName(),
+    startedAt: Date.now(),
+    notes: "",
+    exercises: selected.map((id) => {
+      const exercise = exerciseById(id) || {};
+      return {
+        exerciseId: Number(id),
+        name: exercise.name || "Exercise",
+        muscleGroup: exercise.muscleGroup || "",
+        targetWeight: 0,
+        targetReps: 10,
+        targetSets: defaultSets,
+        finished: false,
+        savedToSession: false,
+        sets: Array.from({ length: defaultSets }, () => ({
+          weight: 0,
+          reps: 10
+        }))
+      };
+    })
+  };
+  state.ui.freestyleSelected = [];
+  state.ui.freestyleSearch = "";
+  state.ui.freestyleMuscle = "All";
+  state.ui.route = "workout";
+  toast("Freestyle workout started!");
+  render();
+}
+
 function renderWorkout() {
+  if (state.ui.route === "workout" && state.ui._freestylePicker && !state.activeWorkout) {
+    return renderFreestylePicker();
+  }
+
   if (!state.activeWorkout) {
     const day = state.ui.workoutDay;
     const plans = state.plans.filter((plan) => plan.dayOfWeek === day);
@@ -641,11 +795,17 @@ function renderWorkout() {
           <div class="card-list">
             ${plans.map(planWithExercise).map((plan) => `<article class="item-card compact"><strong>${escapeHtml(plan.exercise.name || "Exercise")}</strong><p class="muted">${plan.numberOfSets} sets x ${plan.targetReps} reps</p></article>`).join("")}
           </div>
-          <div class="row" style="margin-top:16px">
+          <div class="row" style="margin-top:16px;flex-wrap:wrap;gap:10px">
             <button class="button primary" type="button" data-start-day="${day}">Start ${day}</button>
+            <button class="button accent" type="button" data-action="start-freestyle">Start Without Plan</button>
             <button class="button ghost" type="button" data-action="repeat-last">Repeat Last Workout</button>
           </div>
-        ` : `<div class="empty-state">No plan for ${escapeHtml(day)}. Planner me exercise add karo.</div>`}
+        ` : `
+          <div class="empty-state">No plan for ${escapeHtml(day)}. Planner me exercise add karo ya bina plan ke start karo.</div>
+          <div class="row" style="margin-top:16px">
+            <button class="button accent" type="button" data-action="start-freestyle">Start Without Plan</button>
+          </div>
+        `}
       </section>
     `;
   }
@@ -973,7 +1133,13 @@ function attachScreenHandlers(route) {
 
   if (route === "library") attachLibraryHandlers(view);
   if (route === "planner") attachPlannerHandlers(view);
-  if (route === "workout") attachWorkoutHandlers(view);
+  if (route === "workout") {
+    if (state.ui._freestylePicker && !state.activeWorkout) {
+      attachFreestyleHandlers(view);
+    } else {
+      attachWorkoutHandlers(view);
+    }
+  }
   if (route === "history") attachHistoryHandlers(view);
   if (route === "stats") attachStatsHandlers(view);
   if (route === "settings") attachSettingsHandlers(view);
@@ -985,6 +1151,14 @@ function attachScreenHandlers(route) {
       search.setSelectionRange(search.value.length, search.value.length);
     }
     state.ui.keepLibraryFocus = false;
+  }
+  if (state.ui._keepFreestyleFocus) {
+    const fsSearch = view.querySelector("#freestyleSearch");
+    if (fsSearch) {
+      fsSearch.focus();
+      fsSearch.setSelectionRange(fsSearch.value.length, fsSearch.value.length);
+    }
+    state.ui._keepFreestyleFocus = false;
   }
 }
 
@@ -1169,7 +1343,8 @@ function attachWorkoutHandlers(view) {
       const item = state.activeWorkout.exercises[Number(button.dataset.finishExercise)];
       if (!item) return;
       saveWorkoutExercise(state.activeWorkout, item);
-      toast(`${item.name} saved to session`);
+      saveState();
+      toast(`✅ ${item.name} saved!`);
       render();
     });
   });
@@ -1328,6 +1503,27 @@ function runAction(action) {
   }
   if (action === "repeat-last") {
     repeatLastWorkout();
+  }
+  if (action === "start-freestyle") {
+    state.ui._freestylePicker = true;
+    state.ui.freestyleSelected = [];
+    state.ui.freestyleSearch = "";
+    state.ui.freestyleMuscle = "All";
+    state.ui.route = "workout";
+    render();
+  }
+  if (action === "cancel-freestyle") {
+    state.ui._freestylePicker = false;
+    state.ui.freestyleSelected = [];
+    render();
+  }
+  if (action === "clear-freestyle-selection") {
+    state.ui.freestyleSelected = [];
+    render();
+  }
+  if (action === "launch-freestyle") {
+    state.ui._freestylePicker = false;
+    startFreestyleWorkout();
   }
   if (action === "discard-workout") {
     if (confirm("Discard this workout?")) {
