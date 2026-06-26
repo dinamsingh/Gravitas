@@ -236,6 +236,8 @@ function normalizeState(value) {
       freestyleSearch: "",
       freestyleMuscle: "All",
       freestyleSelected: [],
+      selectedGuideExerciseId: null,
+      guideFrom: "library",
       ...(value.ui || {})
     }
   };
@@ -432,7 +434,8 @@ function render() {
     workout: renderWorkout,
     history: renderHistory,
     stats: renderStats,
-    settings: renderSettings
+    settings: renderSettings,
+    guide: renderGuide
   };
   view.innerHTML = (screens[route] || renderHome)();
   attachScreenHandlers(route);
@@ -447,7 +450,8 @@ function routeTitle(route) {
     workout: "Workout Session",
     history: "Workout History",
     stats: "Progress",
-    settings: "Profile"
+    settings: "Profile",
+    guide: "Form Guide"
   }[route] || "Home";
 }
 
@@ -553,16 +557,21 @@ function renderLibrary() {
 
     <section class="exercise-grid" style="margin-top:16px">
       ${exercises.map((exercise) => `
-        <article class="item-card">
+        <article class="item-card guide-entry-card" data-open-guide="${exercise.id}">
           <div class="row between">
             <span class="badge">${escapeHtml(exercise.muscleGroup)}</span>
-            ${exercise.isCustom ? `<button class="button heat small" type="button" data-delete-exercise="${exercise.id}">Delete</button>` : `<span class="badge">Built-in</span>`}
+            <div class="row" style="gap:6px">
+              ${exercise.isCustom ? `<button class="button heat small" type="button" data-delete-exercise="${exercise.id}">Delete</button>` : `<span class="badge">Built-in</span>`}
+            </div>
           </div>
           <h3>${escapeHtml(exercise.name)}</h3>
           <p class="muted">${escapeHtml(exercise.description)}</p>
-          <div class="row">
-            <span class="badge">${escapeHtml(exercise.equipment)}</span>
-            <span class="badge">${escapeHtml(exercise.difficulty)}</span>
+          <div class="row between" style="margin-top:8px">
+            <div class="row" style="gap:6px">
+              <span class="badge">${escapeHtml(exercise.equipment)}</span>
+              <span class="badge">${escapeHtml(exercise.difficulty)}</span>
+            </div>
+            <button class="button guide-btn small" type="button" data-open-guide="${exercise.id}">📖 Form Guide</button>
           </div>
         </article>
       `).join("")}
@@ -834,6 +843,7 @@ function renderWorkout() {
                 <p class="muted">Target: ${item.targetSets} sets x ${item.targetReps} reps at ${item.targetWeight || 0}${state.settings.unit}</p>
               </div>
               <div class="row exercise-actions">
+                <button class="button guide-btn small" type="button" data-workout-guide="${item.exerciseId}" title="Form Guide">📖</button>
                 <button class="button small" type="button" data-add-set="${exerciseIndex}">Add Set</button>
                 <button class="button primary small exercise-finish" type="button" data-finish-exercise="${exerciseIndex}">Finish</button>
               </div>
@@ -1039,6 +1049,231 @@ function renderStats() {
   `;
 }
 
+function renderMuscleMap(muscleGroup) {
+  const muscle = String(muscleGroup || "").toLowerCase();
+
+  // Mapping: muscleGroup → which SVG paths to highlight
+  const highlight = {
+    chest:     ["chest-l", "chest-r"],
+    back:      ["lats-l", "lats-r", "traps-u"],
+    legs:      ["quad-l", "quad-r", "ham-l", "ham-r"],
+    glutes:    ["glute-l", "glute-r"],
+    calves:    ["calf-l", "calf-r"],
+    shoulders: ["delt-l", "delt-r"],
+    biceps:    ["bicep-l", "bicep-r"],
+    triceps:   ["tricep-l", "tricep-r"],
+    abs:       ["abs"],
+    core:      ["abs"],
+    "functional training": ["quad-l", "quad-r", "glute-l", "glute-r", "abs"],
+    "full body": ["chest-l", "chest-r", "quad-l", "quad-r", "glute-l", "glute-r", "abs"],
+    cardio:    ["quad-l", "quad-r", "calf-l", "calf-r"]
+  };
+
+  const active = new Set(highlight[muscle] || []);
+
+  const fill = (id) => active.has(id)
+    ? "fill: var(--accent); filter: drop-shadow(0 0 6px var(--accent));"
+    : "fill: var(--panel-strong);";
+
+  return `
+    <div class="muscle-map-wrap">
+      <p class="muscle-map-label">Target Muscle</p>
+      <svg class="muscle-map-svg" viewBox="0 0 120 260" xmlns="http://www.w3.org/2000/svg" aria-label="Muscle map">
+        <!-- Head -->
+        <ellipse cx="60" cy="18" rx="14" ry="17" fill="var(--panel-strong)" stroke="var(--line)" stroke-width="1"/>
+        <!-- Neck -->
+        <rect x="53" y="32" width="14" height="10" rx="4" fill="var(--panel-strong)" stroke="var(--line)" stroke-width="1"/>
+        <!-- Traps -->
+        <ellipse id="traps-u" cx="60" cy="50" rx="25" ry="10" style="${fill("traps-u")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Chest Left -->
+        <ellipse id="chest-l" cx="47" cy="65" rx="13" ry="14" style="${fill("chest-l")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Chest Right -->
+        <ellipse id="chest-r" cx="73" cy="65" rx="13" ry="14" style="${fill("chest-r")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Abs -->
+        <rect id="abs" x="50" y="80" width="20" height="36" rx="5" style="${fill("abs")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Delt Left -->
+        <ellipse id="delt-l" cx="33" cy="58" rx="10" ry="12" style="${fill("delt-l")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Delt Right -->
+        <ellipse id="delt-r" cx="87" cy="58" rx="10" ry="12" style="${fill("delt-r")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Bicep Left -->
+        <rect id="bicep-l" x="20" y="72" width="11" height="22" rx="5" style="${fill("bicep-l")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Bicep Right -->
+        <rect id="bicep-r" x="89" y="72" width="11" height="22" rx="5" style="${fill("bicep-r")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Tricep Left -->
+        <rect id="tricep-l" x="18" y="97" width="10" height="20" rx="5" style="${fill("tricep-l")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Tricep Right -->
+        <rect id="tricep-r" x="92" y="97" width="10" height="20" rx="5" style="${fill("tricep-r")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Forearm Left -->
+        <rect x="16" y="120" width="9" height="20" rx="4" fill="var(--panel-strong)" stroke="var(--line)" stroke-width="1"/>
+        <!-- Forearm Right -->
+        <rect x="95" y="120" width="9" height="20" rx="4" fill="var(--panel-strong)" stroke="var(--line)" stroke-width="1"/>
+        <!-- Lats Left -->
+        <ellipse id="lats-l" cx="40" cy="90" rx="10" ry="18" style="${fill("lats-l")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Lats Right -->
+        <ellipse id="lats-r" cx="80" cy="90" rx="10" ry="18" style="${fill("lats-r")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Hips/Pelvis -->
+        <rect x="45" y="118" width="30" height="16" rx="6" fill="var(--panel-strong)" stroke="var(--line)" stroke-width="1"/>
+        <!-- Glute Left -->
+        <ellipse id="glute-l" cx="49" cy="143" rx="12" ry="14" style="${fill("glute-l")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Glute Right -->
+        <ellipse id="glute-r" cx="71" cy="143" rx="12" ry="14" style="${fill("glute-r")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Quad Left -->
+        <rect id="quad-l" x="46" y="158" width="19" height="38" rx="8" style="${fill("quad-l")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Quad Right -->
+        <rect id="quad-r" x="55" y="158" width="19" height="38" rx="8" style="${fill("quad-r")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Ham Left -->
+        <rect id="ham-l" x="46" y="158" width="9" height="38" rx="5" style="${fill("ham-l")}; opacity:0.7" stroke="none"/>
+        <!-- Ham Right -->
+        <rect id="ham-r" x="65" y="158" width="9" height="38" rx="5" style="${fill("ham-r")}; opacity:0.7" stroke="none"/>
+        <!-- Knee caps -->
+        <circle cx="52" cy="199" r="7" fill="var(--panel)" stroke="var(--line)" stroke-width="1"/>
+        <circle cx="68" cy="199" r="7" fill="var(--panel)" stroke="var(--line)" stroke-width="1"/>
+        <!-- Calf Left -->
+        <rect id="calf-l" x="45" y="209" width="14" height="34" rx="6" style="${fill("calf-l")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Calf Right -->
+        <rect id="calf-r" x="61" y="209" width="14" height="34" rx="6" style="${fill("calf-r")}" stroke="var(--line)" stroke-width="1"/>
+        <!-- Feet -->
+        <rect x="42" y="243" width="20" height="10" rx="4" fill="var(--panel-strong)" stroke="var(--line)" stroke-width="1"/>
+        <rect x="58" y="243" width="20" height="10" rx="4" fill="var(--panel-strong)" stroke="var(--line)" stroke-width="1"/>
+      </svg>
+    </div>
+  `;
+}
+
+function renderGuide() {
+  const exerciseId = state.ui.selectedGuideExerciseId;
+  const exercise = exerciseById(exerciseId);
+  if (!exercise) {
+    return `<div class="empty-state">Exercise nahi mila. Wapas jao.</div>`;
+  }
+
+  const guide = window.getExerciseGuide ? window.getExerciseGuide(exerciseId) : null;
+  const videoUrl = window.buildYouTubeUrl
+    ? window.buildYouTubeUrl(guide?.youtubeId, exercise.name)
+    : `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(exercise.name + " exercise tutorial form")}`;
+
+  // Bench angle card
+  const benchAngleHtml = guide?.benchAngle ? (() => {
+    const { label, value, type } = guide.benchAngle;
+    const icon = type === "decline" ? "📉" : type === "flat" ? "➖" : "📈";
+    const color = type === "decline" ? "var(--heat)" : type === "flat" ? "var(--cool)" : "var(--accent)";
+    return `
+      <div class="bench-angle-card">
+        <div class="bench-angle-icon">${icon}</div>
+        <div>
+          <p class="bench-angle-title">Optimal Bench Angle</p>
+          <p class="bench-angle-value" style="color:${color}">${escapeHtml(label)}</p>
+        </div>
+        <div class="bench-angle-visual">
+          <div class="bench-stick" style="transform: rotate(${Math.max(-45, Math.min(90, value))}deg)"></div>
+        </div>
+      </div>
+    `;
+  })() : "";
+
+  // Instructions sections
+  const setupHtml = guide?.setup?.length ? `
+    <div class="guide-section">
+      <h4 class="guide-section-title">⚙️ Setup</h4>
+      <ol class="guide-list">
+        ${guide.setup.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}
+      </ol>
+    </div>
+  ` : "";
+
+  const executionHtml = guide?.execution?.length ? `
+    <div class="guide-section">
+      <h4 class="guide-section-title">▶️ Execution</h4>
+      <ol class="guide-list">
+        ${guide.execution.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}
+      </ol>
+    </div>
+  ` : "";
+
+  const checklistHtml = (guide?.dos?.length || guide?.donts?.length) ? `
+    <div class="guide-checklist-grid">
+      ${guide.dos?.length ? `
+        <div class="guide-check-col dos">
+          <h4 class="guide-section-title">✅ Do's</h4>
+          <ul class="guide-list">
+            ${guide.dos.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+          </ul>
+        </div>
+      ` : ""}
+      ${guide.donts?.length ? `
+        <div class="guide-check-col donts">
+          <h4 class="guide-section-title">❌ Don'ts</h4>
+          <ul class="guide-list">
+            ${guide.donts.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+          </ul>
+        </div>
+      ` : ""}
+    </div>
+  ` : "";
+
+  return `
+    <div class="guide-container">
+      <!-- Back button -->
+      <div class="guide-back-row">
+        <button class="button small" type="button" data-guide-back>← Back</button>
+        <div>
+          <span class="badge">${escapeHtml(exercise.muscleGroup)}</span>
+          <span class="badge" style="margin-left:6px">${escapeHtml(exercise.difficulty)}</span>
+        </div>
+      </div>
+
+      <h2 class="guide-title">${escapeHtml(exercise.name)}</h2>
+      <p class="muted guide-subtitle">${escapeHtml(exercise.description)}</p>
+
+      <!-- Bench angle -->
+      ${benchAngleHtml}
+
+      <!-- Main layout: video + muscle map -->
+      <div class="guide-main-layout">
+        <div class="guide-video-col">
+          <div class="video-wrapper">
+            <iframe
+              class="guide-video"
+              src="${videoUrl}"
+              title="${escapeHtml(exercise.name)} tutorial"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              loading="lazy"
+            ></iframe>
+          </div>
+        </div>
+        <div class="guide-info-col">
+          ${renderMuscleMap(exercise.muscleGroup)}
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div class="guide-instructions">
+        ${setupHtml}
+        ${executionHtml}
+        ${checklistHtml}
+      </div>
+
+      ${!guide ? `
+        <div class="guide-no-data">
+          <p class="muted">Is exercise ke liye detailed instructions available nahi hain. Video dekho upar.</p>
+        </div>
+      ` : ""}
+    </div>
+  `;
+}
+
+function attachGuideHandlers(view) {
+  const backBtn = view.querySelector("[data-guide-back]");
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      const from = state.ui.guideFrom || "library";
+      setRoute(from === "workout" ? "workout" : "library");
+    });
+  }
+}
+
 function renderSettings() {
   return `
     <div class="profile-layout">
@@ -1139,10 +1374,21 @@ function attachScreenHandlers(route) {
     } else {
       attachWorkoutHandlers(view);
     }
+    // 📖 Form Guide buttons inside active workout
+    view.querySelectorAll("[data-workout-guide]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const id = Number(btn.dataset.workoutGuide);
+        state.ui.selectedGuideExerciseId = id;
+        state.ui.guideFrom = "workout";
+        setRoute("guide");
+      });
+    });
   }
   if (route === "history") attachHistoryHandlers(view);
   if (route === "stats") attachStatsHandlers(view);
   if (route === "settings") attachSettingsHandlers(view);
+  if (route === "guide") attachGuideHandlers(view);
 
   if (state.ui.keepLibraryFocus) {
     const search = view.querySelector("#librarySearch");
@@ -1194,6 +1440,17 @@ function attachLibraryHandlers(view) {
       state.plans = state.plans.filter((plan) => plan.exerciseId !== id);
       toast("Custom exercise deleted");
       render();
+    });
+  });
+  // Open Form Guide from library cards
+  view.querySelectorAll("[data-open-guide]").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      if (e.target.closest("[data-delete-exercise]")) return; // don't intercept delete
+      const id = Number(el.dataset.openGuide);
+      if (!id) return;
+      state.ui.selectedGuideExerciseId = id;
+      state.ui.guideFrom = "library";
+      setRoute("guide");
     });
   });
 }
