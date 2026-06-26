@@ -1233,6 +1233,7 @@ function renderGuide() {
         <div class="guide-video-col">
           <div class="video-wrapper">
             <iframe
+              id="guideIframe"
               class="guide-video"
               src="${videoUrl}"
               title="${escapeHtml(exercise.name)} tutorial"
@@ -1241,6 +1242,18 @@ function renderGuide() {
               allowfullscreen
               loading="lazy"
             ></iframe>
+          </div>
+          <!-- Video creator controls -->
+          <div class="video-controls-bar">
+            <button class="video-control-btn active" data-video-select="curated" data-youtube-id="${guide?.youtubeId || ''}" data-name="${escapeHtml(exercise.name)}">
+              ⭐ Curated Guide
+            </button>
+            <button class="video-control-btn" data-video-select="search" data-name="${escapeHtml(exercise.name)}">
+              🔍 Other Creators
+            </button>
+            <a class="video-control-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' proper form tutorial')}" target="_blank" rel="noopener">
+              ↗ Open YouTube
+            </a>
           </div>
         </div>
         <div class="guide-info-col">
@@ -1272,6 +1285,28 @@ function attachGuideHandlers(view) {
       setRoute(from === "workout" ? "workout" : "library");
     });
   }
+
+  // Creator Video switches
+  view.querySelectorAll("[data-video-select]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const type = btn.dataset.videoSelect;
+      const iframe = view.querySelector("#guideIframe");
+      if (!iframe) return;
+
+      view.querySelectorAll("[data-video-select]").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      if (type === "curated") {
+        const youtubeId = btn.dataset.youtubeId;
+        const name = btn.dataset.name;
+        iframe.src = window.buildYouTubeUrl ? window.buildYouTubeUrl(youtubeId, name) : `https://www.youtube.com/embed/${youtubeId}`;
+      } else if (type === "search") {
+        const name = btn.dataset.name;
+        const query = encodeURIComponent(name + " proper form tutorial");
+        iframe.src = `https://www.youtube.com/embed?listType=search&list=${query}&rel=0&modestbranding=1&playsinline=1`;
+      }
+    });
+  });
 }
 
 function renderSettings() {
@@ -1694,6 +1729,30 @@ function showFormVideoModal(exerciseId) {
   const modal = document.getElementById("formVideoModal");
   document.getElementById("formVideoTitle").textContent = exercise.name + " — Form Guide";
   document.getElementById("formVideoIframe").src = videoUrl;
+
+  // Configure modal video switcher
+  const curatedBtn = document.getElementById("modalVideoBtnCurated");
+  const searchBtn = document.getElementById("modalVideoBtnSearch");
+  const externalLink = document.getElementById("modalVideoLinkExternal");
+  const iframe = document.getElementById("formVideoIframe");
+
+  curatedBtn.classList.add("active");
+  searchBtn.classList.remove("active");
+
+  const query = encodeURIComponent(exercise.name + " proper form tutorial");
+  externalLink.href = `https://www.youtube.com/results?search_query=${query}`;
+
+  curatedBtn.onclick = () => {
+    curatedBtn.classList.add("active");
+    searchBtn.classList.remove("active");
+    iframe.src = videoUrl;
+  };
+
+  searchBtn.onclick = () => {
+    curatedBtn.classList.remove("active");
+    searchBtn.classList.add("active");
+    iframe.src = `https://www.youtube.com/embed?listType=search&list=${query}&rel=0&modestbranding=1&playsinline=1`;
+  };
 
   // Bench angle info
   const benchEl = document.getElementById("formVideoBenchAngle");
