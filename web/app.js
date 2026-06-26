@@ -1374,14 +1374,12 @@ function attachScreenHandlers(route) {
     } else {
       attachWorkoutHandlers(view);
     }
-    // 📖 Form Guide buttons inside active workout
+    // 📖 Quick Form Video popup inside active workout
     view.querySelectorAll("[data-workout-guide]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         const id = Number(btn.dataset.workoutGuide);
-        state.ui.selectedGuideExerciseId = id;
-        state.ui.guideFrom = "workout";
-        setRoute("guide");
+        showFormVideoModal(id);
       });
     });
   }
@@ -1680,6 +1678,50 @@ function hideDeleteModal() {
   modal.classList.remove("show");
   modal.setAttribute("aria-hidden", "true");
   _deleteModalResolve = null;
+}
+
+// ── Quick Form Video Modal (used during active workout) ──
+
+function showFormVideoModal(exerciseId) {
+  const exercise = exerciseById(exerciseId);
+  if (!exercise) return;
+
+  const guide = window.getExerciseGuide ? window.getExerciseGuide(exerciseId) : null;
+  const videoUrl = window.buildYouTubeUrl
+    ? window.buildYouTubeUrl(guide?.youtubeId, exercise.name)
+    : `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(exercise.name + " exercise tutorial form")}`;
+
+  const modal = document.getElementById("formVideoModal");
+  document.getElementById("formVideoTitle").textContent = exercise.name + " — Form Guide";
+  document.getElementById("formVideoIframe").src = videoUrl;
+
+  // Bench angle info
+  const benchEl = document.getElementById("formVideoBenchAngle");
+  if (guide?.benchAngle) {
+    const { label, type } = guide.benchAngle;
+    const icon = type === "decline" ? "📉" : type === "flat" ? "➖" : "📈";
+    benchEl.innerHTML = `<span class="bench-badge">${icon} Bench Angle: <strong>${escapeHtml(label)}</strong></span>`;
+    benchEl.style.display = "";
+  } else {
+    benchEl.style.display = "none";
+  }
+
+  modal.setAttribute("aria-hidden", "false");
+  modal.classList.add("show");
+
+  // Close handlers
+  document.getElementById("formVideoClose").onclick = hideFormVideoModal;
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) hideFormVideoModal();
+  }, { once: true });
+}
+
+function hideFormVideoModal() {
+  const modal = document.getElementById("formVideoModal");
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden", "true");
+  // Stop video playback by clearing src
+  document.getElementById("formVideoIframe").src = "";
 }
 
 function deleteSessionById(id) {

@@ -61,6 +61,20 @@
         </div>
       </div>
     </div>
+    <div id="formVideoModal" class="form-video-overlay" aria-hidden="true">
+      <div class="form-video-modal">
+        <div class="form-video-header">
+          <h3 id="formVideoTitle">Exercise Form</h3>
+          <button class="form-video-close" id="formVideoClose" type="button" aria-label="Close">✕</button>
+        </div>
+        <div class="form-video-body">
+          <div class="video-wrapper">
+            <iframe id="formVideoIframe" class="guide-video" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+        </div>
+        <div id="formVideoBenchAngle" class="form-video-bench" style="display:none"></div>
+      </div>
+    </div>
     <script src="./data.js"></script>
     <script src="./exercise-guides.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
