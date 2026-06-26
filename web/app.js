@@ -861,7 +861,15 @@ function renderWorkout() {
                       </div>
                     </div>
                   </label>
-                  <label class="label">Reps<input class="control" inputmode="numeric" value="${escapeHtml(set.reps)}" data-set-field="${exerciseIndex}:${setIndex}:reps" /></label>
+                  <label class="label" style="width: 100%;">Reps
+                    <div class="reps-control-group">
+                      <input class="control reps-input" inputmode="numeric" value="${escapeHtml(set.reps)}" data-set-field="${exerciseIndex}:${setIndex}:reps" aria-label="Reps for set ${setIndex + 1}" />
+                      <div class="reps-stepper" aria-label="Adjust reps">
+                        <button class="reps-adjust-btn" type="button" data-reps-adjust="-1" data-set-index="${exerciseIndex}:${setIndex}" aria-label="Decrease reps">&minus;</button>
+                        <button class="reps-adjust-btn" type="button" data-reps-adjust="1" data-set-index="${exerciseIndex}:${setIndex}" aria-label="Increase reps">+</button>
+                      </div>
+                    </div>
+                  </label>
                   <button class="button heat small" type="button" data-remove-set="${exerciseIndex}:${setIndex}">Remove</button>
                 </div>
               `).join("")}
@@ -1679,6 +1687,22 @@ function attachWorkoutHandlers(view) {
         const formattedWeight = Number(currentWeight.toFixed(2));
         input.value = formattedWeight;
         state.activeWorkout.exercises[exerciseIndex].sets[setIndex].weight = formattedWeight;
+        saveState();
+      }
+    });
+  });
+  view.querySelectorAll(".reps-adjust-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      const adjust = parseInt(button.dataset.repsAdjust, 10);
+      const [exerciseIndex, setIndex] = button.dataset.setIndex.split(":").map(Number);
+      if (state.activeWorkout.exercises[exerciseIndex].finished) return;
+      const input = view.querySelector(`[data-set-field="${exerciseIndex}:${setIndex}:reps"]`);
+      if (input) {
+        let currentReps = parseInt(input.value, 10) || 0;
+        currentReps += adjust;
+        if (currentReps < 0) currentReps = 0;
+        input.value = currentReps;
+        state.activeWorkout.exercises[exerciseIndex].sets[setIndex].reps = currentReps;
         saveState();
       }
     });
