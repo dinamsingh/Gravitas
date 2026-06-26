@@ -1200,7 +1200,7 @@ window.GRAVITAS_EXERCISES = [
     },
     {
         "id":  134,
-        "name":  "Farmer\u0027s Walk",
+        "name":  "Farmer's Walk",
         "muscleGroup":  "Forearms",
         "equipment":  "Dumbbell",
         "difficulty":  "Beginner",
@@ -2325,7 +2325,7 @@ window.GRAVITAS_EXERCISES = [
     },
     {
         "id":  259,
-        "name":  "Farmer\u0027s Carry",
+        "name":  "Farmer's Carry",
         "muscleGroup":  "Core",
         "equipment":  "Dumbbell",
         "difficulty":  "Beginner",
@@ -2487,7 +2487,7 @@ window.GRAVITAS_EXERCISES = [
     },
     {
         "id":  277,
-        "name":  "Wrestler\u0027s Bridge",
+        "name":  "Wrestler's Bridge",
         "muscleGroup":  "Neck",
         "equipment":  "Bodyweight",
         "difficulty":  "Advanced",
@@ -2784,7 +2784,7 @@ window.GRAVITAS_EXERCISES = [
     },
     {
         "id":  310,
-        "name":  "Farmer\u0027s Walk (Functional)",
+        "name":  "Farmer's Walk (Functional)",
         "muscleGroup":  "Functional Training",
         "equipment":  "Dumbbell",
         "difficulty":  "Beginner",
@@ -3060,6 +3060,1823 @@ window.GRAVITAS_EXERCISES = [
         "difficulty":  "Intermediate",
         "description":  "Walk with weight held directly overhead for stability and strength.",
         "isCustom":  false
+    },
+    {
+        "id":  341,
+        "name":  "Barbell Floor Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Perform a bench press lying on the floor, limiting elbow range of motion to focus on chest and triceps.",
+        "isCustom":  false
+    },
+    {
+        "id":  342,
+        "name":  "Dumbbell Floor Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Lie on the floor and press dumbbells upward, reducing shoulder strain.",
+        "isCustom":  false
+    },
+    {
+        "id":  343,
+        "name":  "Kettlebell Floor Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Intermediate",
+        "description":  "Lie on the floor and press kettlebells upward, engaging stabilizers.",
+        "isCustom":  false
+    },
+    {
+        "id":  344,
+        "name":  "Incline Hammer Strength Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Machine",
+        "difficulty":  "Beginner",
+        "description":  "Use a chest press machine that simulates an incline chest press.",
+        "isCustom":  false
+    },
+    {
+        "id":  345,
+        "name":  "Flat Hammer Strength Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Machine",
+        "difficulty":  "Beginner",
+        "description":  "Use a chest press machine that simulates a flat chest press.",
+        "isCustom":  false
+    },
+    {
+        "id":  346,
+        "name":  "Decline Hammer Strength Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Machine",
+        "difficulty":  "Beginner",
+        "description":  "Use a chest press machine that simulates a decline chest press.",
+        "isCustom":  false
+    },
+    {
+        "id":  347,
+        "name":  "Guillotine Bench Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Bench press variation where the bar is lowered to the neck/collarbone area to emphasize upper chest.",
+        "isCustom":  false
+    },
+    {
+        "id":  348,
+        "name":  "Dumbbell Hex Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Press two dumbbells together during the bench press movement to increase chest squeeze.",
+        "isCustom":  false
+    },
+    {
+        "id":  349,
+        "name":  "Single-Arm Dumbbell Bench Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Bench press using only one dumbbell to challenge core stability and chest balance.",
+        "isCustom":  false
+    },
+    {
+        "id":  350,
+        "name":  "Single-Arm Dumbbell Incline Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Incline dumbbell press using only one dumbbell to improve core stabilization.",
+        "isCustom":  false
+    },
+    {
+        "id":  351,
+        "name":  "Incline Cable Flyes",
+        "muscleGroup":  "Chest",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Perform flyes on an incline bench using low pulleys to target the upper chest.",
+        "isCustom":  false
+    },
+    {
+        "id":  352,
+        "name":  "Decline Cable Flyes",
+        "muscleGroup":  "Chest",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Perform flyes on a decline bench using high pulleys to target the lower chest.",
+        "isCustom":  false
+    },
+    {
+        "id":  353,
+        "name":  "Single-Arm Cable Crossover",
+        "muscleGroup":  "Chest",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Perform a cable crossover with one arm to focus on peak contraction and symmetry.",
+        "isCustom":  false
+    },
+    {
+        "id":  354,
+        "name":  "Underhand Cable Crossover",
+        "muscleGroup":  "Chest",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Set pulleys low and pull handles up and together to target the upper chest.",
+        "isCustom":  false
+    },
+    {
+        "id":  355,
+        "name":  "Kneeling Cable Flyes",
+        "muscleGroup":  "Chest",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Perform cable chest flyes while kneeling on the floor to engage the core and reduce cheating.",
+        "isCustom":  false
+    },
+    {
+        "id":  356,
+        "name":  "Machine Fly (Pec Deck)",
+        "muscleGroup":  "Chest",
+        "equipment":  "Machine",
+        "difficulty":  "Beginner",
+        "description":  "Perform chest flyes sitting upright on a machine, squeezing the handles together in front.",
+        "isCustom":  false
+    },
+    {
+        "id":  357,
+        "name":  "Bench Press with Bands",
+        "muscleGroup":  "Chest",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Attach resistance bands to the barbell for accommodating resistance during the bench press.",
+        "isCustom":  false
+    },
+    {
+        "id":  358,
+        "name":  "Floor Press with Chains",
+        "muscleGroup":  "Chest",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Perform a floor press with heavy chains attached to the bar, increasing resistance at lockout.",
+        "isCustom":  false
+    },
+    {
+        "id":  359,
+        "name":  "Reverse Grip Bench Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Bench press using an underhand grip, which targets the upper chest and triceps.",
+        "isCustom":  false
+    },
+    {
+        "id":  360,
+        "name":  "Duffalo Bar Bench Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Bench press using a curved Duffalo bar to increase range of motion and reduce wrist strain.",
+        "isCustom":  false
+    },
+    {
+        "id":  361,
+        "name":  "Swiss Bar Bench Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Bench press using a multi-grip bar to keep wrists in a neutral position, targeting triceps and chest.",
+        "isCustom":  false
+    },
+    {
+        "id":  362,
+        "name":  "Spoto Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Bench press variation where the bar is paused 1-2 inches above the chest before pressing up.",
+        "isCustom":  false
+    },
+    {
+        "id":  363,
+        "name":  "Board Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Bench press where the bar is lowered onto wooden boards on your chest to train the lockout phase.",
+        "isCustom":  false
+    },
+    {
+        "id":  364,
+        "name":  "Pin Press",
+        "muscleGroup":  "Chest",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Bench press starting from a dead stop off safety pins set in the power rack.",
+        "isCustom":  false
+    },
+    {
+        "id":  365,
+        "name":  "Kroc Row",
+        "muscleGroup":  "Back",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Advanced",
+        "description":  "High-rep, heavy dumbbell rows using slight body momentum to build upper back size and grip strength.",
+        "isCustom":  false
+    },
+    {
+        "id":  366,
+        "name":  "Seal Row",
+        "muscleGroup":  "Back",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Lie face down on an elevated flat bench and row a barbell, eliminating lower back cheating.",
+        "isCustom":  false
+    },
+    {
+        "id":  367,
+        "name":  "Chest-Supported Dumbbell Row",
+        "muscleGroup":  "Back",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Lie face down on an incline bench and row dumbbells to isolate the upper back.",
+        "isCustom":  false
+    },
+    {
+        "id":  368,
+        "name":  "Single-Arm Lat Pulldown",
+        "muscleGroup":  "Back",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Lat pulldown using a single handle to correct strength imbalances and increase range of motion.",
+        "isCustom":  false
+    },
+    {
+        "id":  369,
+        "name":  "Straight-Arm Lat Pulldown",
+        "muscleGroup":  "Back",
+        "equipment":  "Cable",
+        "difficulty":  "Beginner",
+        "description":  "Stand and pull a straight bar down to your thighs with straight arms to isolate the lats.",
+        "isCustom":  false
+    },
+    {
+        "id":  370,
+        "name":  "Kneeling Lat Pulldown",
+        "muscleGroup":  "Back",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Perform a pulldown while kneeling to engage the core and lats without thigh pad support.",
+        "isCustom":  false
+    },
+    {
+        "id":  371,
+        "name":  "Single-Arm Cable Row",
+        "muscleGroup":  "Back",
+        "equipment":  "Cable",
+        "difficulty":  "Beginner",
+        "description":  "Seated row using one arm at a time to improve unilateral back strength and rotation.",
+        "isCustom":  false
+    },
+    {
+        "id":  372,
+        "name":  "Kelso Shrug",
+        "muscleGroup":  "Back",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Perform shrugs while lying face down on an incline bench to target the middle and lower traps.",
+        "isCustom":  false
+    },
+    {
+        "id":  373,
+        "name":  "Behind-the-Back Barbell Shrug",
+        "muscleGroup":  "Back",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Shrug a barbell held behind your glutes to isolate the upper and middle traps.",
+        "isCustom":  false
+    },
+    {
+        "id":  374,
+        "name":  "Incline Dumbbell Shrug",
+        "muscleGroup":  "Back",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Lie chest-down on an incline bench and shrug dumbbells forward/upward to hit the traps.",
+        "isCustom":  false
+    },
+    {
+        "id":  375,
+        "name":  "Cable Shrug",
+        "muscleGroup":  "Back",
+        "equipment":  "Cable",
+        "difficulty":  "Beginner",
+        "description":  "Shrug using a low pulley cable station to target the traps with constant tension.",
+        "isCustom":  false
+    },
+    {
+        "id":  376,
+        "name":  "Trap Bar Shrug",
+        "muscleGroup":  "Back",
+        "equipment":  "Barbell",
+        "difficulty":  "Beginner",
+        "description":  "Shrug using a hex bar, which allows hands to remain at the sides in a neutral grip.",
+        "isCustom":  false
+    },
+    {
+        "id":  377,
+        "name":  "Smith Machine Shrug",
+        "muscleGroup":  "Back",
+        "equipment":  "Machine",
+        "difficulty":  "Beginner",
+        "description":  "Shrug using a Smith machine for fixed, vertical movement.",
+        "isCustom":  false
+    },
+    {
+        "id":  378,
+        "name":  "Single-Arm Dumbbell Row",
+        "muscleGroup":  "Back",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Row a single dumbbell while supporting your body with the opposite hand and knee on a bench.",
+        "isCustom":  false
+    },
+    {
+        "id":  379,
+        "name":  "Dumbbell Pullover (Lat Focus)",
+        "muscleGroup":  "Back",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Lie across a bench, lower a dumbbell overhead, and pull it back up using your lats.",
+        "isCustom":  false
+    },
+    {
+        "id":  380,
+        "name":  "Cable Pullover (Standing)",
+        "muscleGroup":  "Back",
+        "equipment":  "Cable",
+        "difficulty":  "Beginner",
+        "description":  "Stand facing a high cable and pull a straight bar or rope down with arms straight to isolate the lats.",
+        "isCustom":  false
+    },
+    {
+        "id":  381,
+        "name":  "Rack Pull (Above Knee)",
+        "muscleGroup":  "Back",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Perform rack pulls with safety pins set above the knees to focus on upper back and lockout.",
+        "isCustom":  false
+    },
+    {
+        "id":  382,
+        "name":  "Rack Pull (Below Knee)",
+        "muscleGroup":  "Back",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Perform rack pulls with safety pins set below the knees for lat and lower back lockout strength.",
+        "isCustom":  false
+    },
+    {
+        "id":  383,
+        "name":  "Deficit Deadlift (Back Focus)",
+        "muscleGroup":  "Back",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Stand on a platform to deadlift, increasing the range of motion to challenge back pulling power.",
+        "isCustom":  false
+    },
+    {
+        "id":  384,
+        "name":  "Snatch-Grip Deadlift (Back Focus)",
+        "muscleGroup":  "Back",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Deadlift with a wide snatch-grip to maximize middle back and trapezius recruitment.",
+        "isCustom":  false
+    },
+    {
+        "id":  385,
+        "name":  "T-Bar Row (Wide Grip)",
+        "muscleGroup":  "Back",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Row a T-Bar with a wide grip to focus on upper back and rear delts.",
+        "isCustom":  false
+    },
+    {
+        "id":  386,
+        "name":  "Machine Row (Unilateral)",
+        "muscleGroup":  "Back",
+        "equipment":  "Machine",
+        "difficulty":  "Beginner",
+        "description":  "Perform machine back rows using one arm at a time to correct muscular imbalances.",
+        "isCustom":  false
+    },
+    {
+        "id":  387,
+        "name":  "Kneeling One-Arm Cable Row",
+        "muscleGroup":  "Back",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Row a cable from a kneeling position to challenge core stability and lat extension.",
+        "isCustom":  false
+    },
+    {
+        "id":  388,
+        "name":  "Helo Pull",
+        "muscleGroup":  "Back",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Pull-down variation focusing on a sweeping motion to activate the lower lats.",
+        "isCustom":  false
+    },
+    {
+        "id":  389,
+        "name":  "Barbell Z-Press",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Press a barbell overhead while sitting flat on the floor with legs straight, forcing core and shoulder isolation.",
+        "isCustom":  false
+    },
+    {
+        "id":  390,
+        "name":  "Dumbbell Z-Press",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Press dumbbells overhead while sitting flat on the floor with straight legs.",
+        "isCustom":  false
+    },
+    {
+        "id":  391,
+        "name":  "Single-Arm Kettlebell Press",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Intermediate",
+        "description":  "Press a single kettlebell overhead to improve shoulder stability and core strength.",
+        "isCustom":  false
+    },
+    {
+        "id":  392,
+        "name":  "Double Kettlebell Press",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Advanced",
+        "description":  "Press two kettlebells overhead simultaneously.",
+        "isCustom":  false
+    },
+    {
+        "id":  393,
+        "name":  "Kettlebell Windmill",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Advanced",
+        "description":  "Hold a kettlebell overhead, hinge at the hips, and reach down to touch your toes for shoulder stability and obliques.",
+        "isCustom":  false
+    },
+    {
+        "id":  394,
+        "name":  "Kettlebell Halo",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Beginner",
+        "description":  "Move a kettlebell in a circle around your head to improve shoulder mobility and core control.",
+        "isCustom":  false
+    },
+    {
+        "id":  395,
+        "name":  "Dumbbell Halo",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Move a dumbbell in a circle around your head for shoulder health.",
+        "isCustom":  false
+    },
+    {
+        "id":  396,
+        "name":  "Plate Halo",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Plate",
+        "difficulty":  "Beginner",
+        "description":  "Move a weight plate in a circle around your head for shoulder health.",
+        "isCustom":  false
+    },
+    {
+        "id":  397,
+        "name":  "Kettlebell Bottoms-Up Press",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Advanced",
+        "description":  "Hold a kettlebell upside down (bottoms-up) and press it overhead, testing wrist and shoulder stability.",
+        "isCustom":  false
+    },
+    {
+        "id":  398,
+        "name":  "Single-Arm Dumbbell Shoulder Press",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Press one dumbbell overhead at a time to challenge torso alignment.",
+        "isCustom":  false
+    },
+    {
+        "id":  399,
+        "name":  "Dumbbell W-Press",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Press dumbbells starting with arms held at a W-angle to target lateral and rear delts.",
+        "isCustom":  false
+    },
+    {
+        "id":  400,
+        "name":  "Incline Dumbbell Lateral Raise",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Lie sideways on an incline bench and raise a dumbbell to isolate the lateral shoulder head.",
+        "isCustom":  false
+    },
+    {
+        "id":  401,
+        "name":  "Chest-Supported Lateral Raise",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Lie chest-down on an incline bench and raise dumbbells to the sides to isolate lateral delts without swinging.",
+        "isCustom":  false
+    },
+    {
+        "id":  402,
+        "name":  "Cable Front Raise (Unilateral)",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Cable",
+        "difficulty":  "Beginner",
+        "description":  "Perform front raises using a low cable pulley one arm at a time.",
+        "isCustom":  false
+    },
+    {
+        "id":  403,
+        "name":  "Rear Delt Row (Barbell)",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Row a barbell with flared elbows and wide stance to target the rear delts.",
+        "isCustom":  false
+    },
+    {
+        "id":  404,
+        "name":  "Rear Delt Row (Dumbbell)",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Row dumbbells with elbows flared 90 degrees outward to emphasize the rear delts.",
+        "isCustom":  false
+    },
+    {
+        "id":  405,
+        "name":  "Y-Raise (Dumbbell)",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Raise dumbbells at a 45-degree angle in a Y-shape to hit the lower traps and deltoids.",
+        "isCustom":  false
+    },
+    {
+        "id":  406,
+        "name":  "Y-Raise (Cable)",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Perform Y-raises using low cables to keep constant tension on the shoulders and upper back.",
+        "isCustom":  false
+    },
+    {
+        "id":  407,
+        "name":  "Cable Face Pull with External Rotation",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Perform a face pull, rotating wrists upwards at the end of the pull for rotator cuff health.",
+        "isCustom":  false
+    },
+    {
+        "id":  408,
+        "name":  "Dumbbell Face Pull",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Lie face down on an incline bench and pull dumbbells toward your ears with elbows high.",
+        "isCustom":  false
+    },
+    {
+        "id":  409,
+        "name":  "Dumbbell Cuban Press",
+        "muscleGroup":  "Shoulders",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Advanced",
+        "description":  "Upright row dumbbells, externally rotate shoulders, then press them overhead to train rotator cuffs.",
+        "isCustom":  false
+    },
+    {
+        "id":  410,
+        "name":  "Single-Arm Preacher Curl",
+        "muscleGroup":  "Biceps",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Perform a preacher curl using one dumbbell to focus on each arm individually.",
+        "isCustom":  false
+    },
+    {
+        "id":  411,
+        "name":  "Plate Curl",
+        "muscleGroup":  "Biceps",
+        "equipment":  "Plate",
+        "difficulty":  "Beginner",
+        "description":  "Grip a weight plate by the edges and curl it to strengthen biceps and grip.",
+        "isCustom":  false
+    },
+    {
+        "id":  412,
+        "name":  "EZ-Bar Preacher Curl",
+        "muscleGroup":  "Biceps",
+        "equipment":  "EZ-Bar",
+        "difficulty":  "Beginner",
+        "description":  "Perform a preacher curl using an EZ-Bar on a sloped pad.",
+        "isCustom":  false
+    },
+    {
+        "id":  413,
+        "name":  "Dumbbell Preacher Curl (Unilateral)",
+        "muscleGroup":  "Biceps",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Unilateral preacher curl using a dumbbell to balance bicep development.",
+        "isCustom":  false
+    },
+    {
+        "id":  414,
+        "name":  "Reverse Grip EZ-Bar Curl",
+        "muscleGroup":  "Biceps",
+        "equipment":  "EZ-Bar",
+        "difficulty":  "Beginner",
+        "description":  "Curl an EZ-Bar with an overhand grip to build forearms (brachioradialis) and biceps.",
+        "isCustom":  false
+    },
+    {
+        "id":  415,
+        "name":  "Cable Preacher Curl",
+        "muscleGroup":  "Biceps",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Preacher curl using a cable machine for continuous tension at the top of the curl.",
+        "isCustom":  false
+    },
+    {
+        "id":  416,
+        "name":  "High Cable Curl (Hercules Curl)",
+        "muscleGroup":  "Biceps",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Stand between high pulleys and curl cables toward ears, keeping elbows high.",
+        "isCustom":  false
+    },
+    {
+        "id":  417,
+        "name":  "Lying Cable Curl",
+        "muscleGroup":  "Biceps",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Lie flat on the floor or bench, pulling low cables toward shoulders to prevent cheating.",
+        "isCustom":  false
+    },
+    {
+        "id":  418,
+        "name":  "Dumbbell Waiter Curl",
+        "muscleGroup":  "Biceps",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Hold the flat side of a dumbbell with both palms facing up and curl to focus on bicep peak.",
+        "isCustom":  false
+    },
+    {
+        "id":  419,
+        "name":  "Cheat Curl (Barbell)",
+        "muscleGroup":  "Biceps",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Curl heavy barbell using controlled hip drive to overload the bicep during the eccentric phase.",
+        "isCustom":  false
+    },
+    {
+        "id":  420,
+        "name":  "Incline Hammer Curl",
+        "muscleGroup":  "Biceps",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Curl dumbbells on an incline bench with palms neutral (hammer grip).",
+        "isCustom":  false
+    },
+    {
+        "id":  421,
+        "name":  "Kettlebell Curl (Bottoms-Up)",
+        "muscleGroup":  "Biceps",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Intermediate",
+        "description":  "Curl a kettlebell holding it by the handle with the weight on top, engaging grip.",
+        "isCustom":  false
+    },
+    {
+        "id":  422,
+        "name":  "Concentrated Cable Curl",
+        "muscleGroup":  "Biceps",
+        "equipment":  "Cable",
+        "difficulty":  "Beginner",
+        "description":  "Perform concentration curl using a low pulley cable.",
+        "isCustom":  false
+    },
+    {
+        "id":  423,
+        "name":  "Close-Grip Incline Bench Press",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Press a barbell on an incline bench with a narrow grip to target the upper chest and triceps.",
+        "isCustom":  false
+    },
+    {
+        "id":  424,
+        "name":  "Close-Grip Decline Bench Press",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Press a barbell on a decline bench with a narrow grip.",
+        "isCustom":  false
+    },
+    {
+        "id":  425,
+        "name":  "Single-Arm Cable Pushdown",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Cable",
+        "difficulty":  "Beginner",
+        "description":  "Pull a single cable handle down to lock out the elbow, focusing on unilateral tricep strength.",
+        "isCustom":  false
+    },
+    {
+        "id":  426,
+        "name":  "Decline Skull Crushers",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Perform skull crushers on a decline bench to increase tricep long head tension.",
+        "isCustom":  false
+    },
+    {
+        "id":  427,
+        "name":  "Floor Skull Crushers",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Perform skull crushers lying on the floor to limit elbow strain.",
+        "isCustom":  false
+    },
+    {
+        "id":  428,
+        "name":  "Close-Grip Floor Press",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Perform a close-grip bench press on the floor to emphasize the triceps lockout.",
+        "isCustom":  false
+    },
+    {
+        "id":  429,
+        "name":  "Dumbbell Kickback (Unilateral)",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Hinge forward and extend one arm behind you holding a dumbbell to isolate the tricep.",
+        "isCustom":  false
+    },
+    {
+        "id":  430,
+        "name":  "Cable Overhead Tricep Extension (Single-Arm)",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Cable",
+        "difficulty":  "Beginner",
+        "description":  "Perform an overhead cable extension unilateral to develop equal strength.",
+        "isCustom":  false
+    },
+    {
+        "id":  431,
+        "name":  "DB Overhead Tricep Extension (Two-Handed)",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Hold a single heavy dumbbell with both hands overhead and lower behind neck.",
+        "isCustom":  false
+    },
+    {
+        "id":  432,
+        "name":  "Bodyweight Tricep Extension (Bar)",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Bodyweight",
+        "difficulty":  "Intermediate",
+        "description":  "Stand facing a bar, place hands on it, lean forward and bend elbows, then push body back using triceps.",
+        "isCustom":  false
+    },
+    {
+        "id":  433,
+        "name":  "Ring Dips",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Other",
+        "difficulty":  "Advanced",
+        "description":  "Perform dips on gymnast rings for extreme stability challenge.",
+        "isCustom":  false
+    },
+    {
+        "id":  434,
+        "name":  "Weighted Dips",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Bodyweight",
+        "difficulty":  "Intermediate",
+        "description":  "Perform dips on parallel bars wearing a weighted belt.",
+        "isCustom":  false
+    },
+    {
+        "id":  435,
+        "name":  "Band Overhead Tricep Extension",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Bands",
+        "difficulty":  "Beginner",
+        "description":  "Perform tricep extensions overhead using a resistance band anchored behind you.",
+        "isCustom":  false
+    },
+    {
+        "id":  436,
+        "name":  "Dumbbell Tate Press (Incline)",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Perform Tate presses on an incline bench to target the lateral head.",
+        "isCustom":  false
+    },
+    {
+        "id":  437,
+        "name":  "Cable Kickback (Unilateral)",
+        "muscleGroup":  "Triceps",
+        "equipment":  "Cable",
+        "difficulty":  "Beginner",
+        "description":  "Extend cable backward unilateral to isolate the triceps without gravity dead-zones.",
+        "isCustom":  false
+    },
+    {
+        "id":  438,
+        "name":  "Deficit Deadlift",
+        "muscleGroup":  "Legs",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Stand on a small platform (1-3 inches) to perform a deadlift, increasing the range of motion and leg drive.",
+        "isCustom":  false
+    },
+    {
+        "id":  439,
+        "name":  "Snatch-Grip Deadlift",
+        "muscleGroup":  "Legs",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Deadlift with a very wide grip to increase upper back and hamstring engagement.",
+        "isCustom":  false
+    },
+    {
+        "id":  440,
+        "name":  "Block Pull",
+        "muscleGroup":  "Legs",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Deadlift with the plates elevated on blocks, reducing the range of motion to focus on mid-range and lockout.",
+        "isCustom":  false
+    },
+    {
+        "id":  441,
+        "name":  "Cossack Squat",
+        "muscleGroup":  "Legs",
+        "equipment":  "Bodyweight",
+        "difficulty":  "Intermediate",
+        "description":  "Perform a deep lateral squat to one side while keeping the opposite leg straight and heel on the ground.",
+        "isCustom":  false
+    },
+    {
+        "id":  442,
+        "name":  "Deficit Reverse Lunge",
+        "muscleGroup":  "Legs",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Stand on a small platform and step backward into a lunge to increase glute and hamstring stretch.",
+        "isCustom":  false
+    },
+    {
+        "id":  443,
+        "name":  "Spanish Squat",
+        "muscleGroup":  "Legs",
+        "equipment":  "Bands",
+        "difficulty":  "Intermediate",
+        "description":  "Squat with a heavy band wrapped behind your knees to isolate the quadriceps without joint strain.",
+        "isCustom":  false
+    },
+    {
+        "id":  444,
+        "name":  "Hatfield Squat",
+        "muscleGroup":  "Legs",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Squat using a safety squat bar while holding onto a rack for stability, allowing maximum leg drive.",
+        "isCustom":  false
+    },
+    {
+        "id":  445,
+        "name":  "Sissy Squat (Weighted)",
+        "muscleGroup":  "Legs",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Lean back while squatting on toes to put extreme isolation load on the quads.",
+        "isCustom":  false
+    },
+    {
+        "id":  446,
+        "name":  "Goblet Bulgarian Split Squat",
+        "muscleGroup":  "Legs",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Perform split squats holding a dumbbell in a goblet position under your chin.",
+        "isCustom":  false
+    },
+    {
+        "id":  447,
+        "name":  "Spanish Squat (Bodyweight)",
+        "muscleGroup":  "Legs",
+        "equipment":  "Bands",
+        "difficulty":  "Beginner",
+        "description":  "Bodyweight squat using a band anchored behind knees for quad isometric activation.",
+        "isCustom":  false
+    },
+    {
+        "id":  448,
+        "name":  "Spanish Squat (Weighted)",
+        "muscleGroup":  "Legs",
+        "equipment":  "Bands",
+        "difficulty":  "Intermediate",
+        "description":  "Perform Spanish squats holding a kettlebell or dumbbell.",
+        "isCustom":  false
+    },
+    {
+        "id":  449,
+        "name":  "Barbell Lunge (Deficit)",
+        "muscleGroup":  "Legs",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Perform lunges stepping back off a small platform with a barbell on your back.",
+        "isCustom":  false
+    },
+    {
+        "id":  450,
+        "name":  "Dumbbell Step-Up (Weighted)",
+        "muscleGroup":  "Legs",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Step up onto a bench or box holding heavy dumbbells at your sides.",
+        "isCustom":  false
+    },
+    {
+        "id":  451,
+        "name":  "Shrimp Squat",
+        "muscleGroup":  "Legs",
+        "equipment":  "Bodyweight",
+        "difficulty":  "Advanced",
+        "description":  "Unilateral bodyweight squat holding one foot behind your back as you touch that knee to the floor.",
+        "isCustom":  false
+    },
+    {
+        "id":  452,
+        "name":  "Skater Squat",
+        "muscleGroup":  "Legs",
+        "equipment":  "Bodyweight",
+        "difficulty":  "Intermediate",
+        "description":  "One-legged squat stepping the free leg back and out to touch the knee to the floor.",
+        "isCustom":  false
+    },
+    {
+        "id":  453,
+        "name":  "Single-Leg Box Squat",
+        "muscleGroup":  "Legs",
+        "equipment":  "Bodyweight",
+        "difficulty":  "Intermediate",
+        "description":  "Perform a pistol squat down onto a box or bench and stand back up.",
+        "isCustom":  false
+    },
+    {
+        "id":  454,
+        "name":  "Deficit Reverse Lunge (Dumbbell)",
+        "muscleGroup":  "Legs",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Step back off an elevated box with dumbbells to deepen lunge range.",
+        "isCustom":  false
+    },
+    {
+        "id":  455,
+        "name":  "Deficit Reverse Lunge (Barbell)",
+        "muscleGroup":  "Legs",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Step back off a box holding a barbell to target lower leg muscles.",
+        "isCustom":  false
+    },
+    {
+        "id":  456,
+        "name":  "Walking Lunge (Weighted)",
+        "muscleGroup":  "Legs",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Perform walking lunges holding weights to build lower body size.",
+        "isCustom":  false
+    },
+    {
+        "id":  457,
+        "name":  "Reverse Lunge (Weighted)",
+        "muscleGroup":  "Legs",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Step backward into a lunge holding weights.",
+        "isCustom":  false
+    },
+    {
+        "id":  458,
+        "name":  "Dumbbell Curtsy Lunge",
+        "muscleGroup":  "Legs",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Lunge backward crossing one leg behind the other, holding dumbbells.",
+        "isCustom":  false
+    },
+    {
+        "id":  459,
+        "name":  "Barbell Curtsy Lunge",
+        "muscleGroup":  "Legs",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Curtsy lunge with a barbell loaded across upper back.",
+        "isCustom":  false
+    },
+    {
+        "id":  460,
+        "name":  "Spanish Squat with Band",
+        "muscleGroup":  "Legs",
+        "equipment":  "Bands",
+        "difficulty":  "Intermediate",
+        "description":  "Squat leaning back against a thick resistance band hooked behind your knees.",
+        "isCustom":  false
+    },
+    {
+        "id":  461,
+        "name":  "Belt Squat (Machine)",
+        "muscleGroup":  "Legs",
+        "equipment":  "Machine",
+        "difficulty":  "Beginner",
+        "description":  "Perform squats with weight loaded onto a hip belt to eliminate spinal loading.",
+        "isCustom":  false
+    },
+    {
+        "id":  462,
+        "name":  "Hack Squat (Safety Bar)",
+        "muscleGroup":  "Legs",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Squat holding a barbell behind your thighs, or using a safety squat bar.",
+        "isCustom":  false
+    },
+    {
+        "id":  463,
+        "name":  "Leg Press (Feet High)",
+        "muscleGroup":  "Legs",
+        "equipment":  "Machine",
+        "difficulty":  "Beginner",
+        "description":  "Leg press with feet placed near the top of the sled to shift focus to hamstrings and glutes.",
+        "isCustom":  false
+    },
+    {
+        "id":  464,
+        "name":  "Leg Press (Feet Low)",
+        "muscleGroup":  "Legs",
+        "equipment":  "Machine",
+        "difficulty":  "Beginner",
+        "description":  "Leg press with feet low to isolate the quadriceps.",
+        "isCustom":  false
+    },
+    {
+        "id":  465,
+        "name":  "Glute Bridge (Weighted)",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Lie on your back, place a weight on your hips, and lift your hips to target the glutes.",
+        "isCustom":  false
+    },
+    {
+        "id":  466,
+        "name":  "Single-Leg Leg Press (Glute Emphasis)",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Machine",
+        "difficulty":  "Intermediate",
+        "description":  "Sit sideways or place foot high on leg press to target glutes unilaterally.",
+        "isCustom":  false
+    },
+    {
+        "id":  467,
+        "name":  "Double Kettlebell Squat",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Intermediate",
+        "description":  "Squat while holding two kettlebells in the front rack position.",
+        "isCustom":  false
+    },
+    {
+        "id":  468,
+        "name":  "Kettlebell Goblet Squat",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Beginner",
+        "description":  "Squat holding one kettlebell upside down under chin.",
+        "isCustom":  false
+    },
+    {
+        "id":  469,
+        "name":  "Double Kettlebell Squat (Front Rack)",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Intermediate",
+        "description":  "Front rack squat using two kettlebells for trunk and glute strength.",
+        "isCustom":  false
+    },
+    {
+        "id":  470,
+        "name":  "Kettlebell Front Squat",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Intermediate",
+        "description":  "Perform front squats with a kettlebell.",
+        "isCustom":  false
+    },
+    {
+        "id":  471,
+        "name":  "Kettlebell Renegade Row (Glute Focus)",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Advanced",
+        "description":  "Renegade row holding pushup plank on kettlebells, squeezing glutes.",
+        "isCustom":  false
+    },
+    {
+        "id":  472,
+        "name":  "Single-Leg Romanian Deadlift (Glute Focus)",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Perform single-leg RDL holding a dumbbell, pushing hips back to target glutes.",
+        "isCustom":  false
+    },
+    {
+        "id":  473,
+        "name":  "Frog Pump (Weighted)",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Perform frog pumps with a weight plate or dumbbell placed on the hips.",
+        "isCustom":  false
+    },
+    {
+        "id":  474,
+        "name":  "Cable Pull-Through (Glute Focus)",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Cable",
+        "difficulty":  "Beginner",
+        "description":  "Stand facing away from cable, hinge at hips, pull rope through legs while squeezing glutes.",
+        "isCustom":  false
+    },
+    {
+        "id":  475,
+        "name":  "Dumbbell Pull-Through",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Perform pull-through movements holding a dumbbell or resistance band.",
+        "isCustom":  false
+    },
+    {
+        "id":  476,
+        "name":  "Deficit Hip Thrust",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Elevate your feet on a platform to increase hip flexion and glute stretch during hip thrusts.",
+        "isCustom":  false
+    },
+    {
+        "id":  477,
+        "name":  "Single-Leg Hip Thrust (Bodyweight)",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Bodyweight",
+        "difficulty":  "Beginner",
+        "description":  "Perform a hip thrust on one leg to isolate glutes unilaterally.",
+        "isCustom":  false
+    },
+    {
+        "id":  478,
+        "name":  "Single-Leg Hip Thrust (Weighted)",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Weighted single-leg hip thrust to increase overload.",
+        "isCustom":  false
+    },
+    {
+        "id":  479,
+        "name":  "Banded Clamshell",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Bands",
+        "difficulty":  "Beginner",
+        "description":  "Lie on your side with a mini-band around your knees, and open/close knees.",
+        "isCustom":  false
+    },
+    {
+        "id":  480,
+        "name":  "Banded Fire Hydrant",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Bands",
+        "difficulty":  "Beginner",
+        "description":  "On all fours with a mini-band, lift one leg out to the side to target gluteus medius.",
+        "isCustom":  false
+    },
+    {
+        "id":  481,
+        "name":  "Glute Bridge with Band",
+        "muscleGroup":  "Glutes",
+        "equipment":  "Bands",
+        "difficulty":  "Beginner",
+        "description":  "Perform a glute bridge with a band around your knees to pull outward.",
+        "isCustom":  false
+    },
+    {
+        "id":  482,
+        "name":  "Seated Calf Press on Leg Press",
+        "muscleGroup":  "Calves",
+        "equipment":  "Machine",
+        "difficulty":  "Beginner",
+        "description":  "Push the leg press platform using only the balls of your feet while seated.",
+        "isCustom":  false
+    },
+    {
+        "id":  483,
+        "name":  "Standing Calf Press on Hack Squat",
+        "muscleGroup":  "Calves",
+        "equipment":  "Machine",
+        "difficulty":  "Beginner",
+        "description":  "Perform calf raises using the hack squat machine.",
+        "isCustom":  false
+    },
+    {
+        "id":  484,
+        "name":  "Rotary Calf Raise",
+        "muscleGroup":  "Calves",
+        "equipment":  "Machine",
+        "difficulty":  "Beginner",
+        "description":  "Perform calf raises on a specialized rotary machine.",
+        "isCustom":  false
+    },
+    {
+        "id":  485,
+        "name":  "Tibialis Raise (Weighted)",
+        "muscleGroup":  "Calves",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Perform toe raises holding a dumbbell between feet to strengthen the tibialis anterior.",
+        "isCustom":  false
+    },
+    {
+        "id":  486,
+        "name":  "Single-Leg Standing Calf Raise",
+        "muscleGroup":  "Calves",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Perform standing calf raises on one leg at a time.",
+        "isCustom":  false
+    },
+    {
+        "id":  487,
+        "name":  "Single-Leg Seated Calf Raise",
+        "muscleGroup":  "Calves",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Perform seated calf raises one leg at a time.",
+        "isCustom":  false
+    },
+    {
+        "id":  488,
+        "name":  "Calf Raise on Smith Machine",
+        "muscleGroup":  "Calves",
+        "equipment":  "Machine",
+        "difficulty":  "Beginner",
+        "description":  "Perform standing calf raises using the Smith machine.",
+        "isCustom":  false
+    },
+    {
+        "id":  489,
+        "name":  "Dumbbell Standing Calf Raise (Deficit)",
+        "muscleGroup":  "Calves",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Perform calf raises standing on a step edge holding dumbbells.",
+        "isCustom":  false
+    },
+    {
+        "id":  490,
+        "name":  "GHD Sit-Up",
+        "muscleGroup":  "Abs",
+        "equipment":  "Other",
+        "difficulty":  "Advanced",
+        "description":  "Perform dynamic sit-ups on a Glute-Ham Developer machine for extreme core demand.",
+        "isCustom":  false
+    },
+    {
+        "id":  491,
+        "name":  "Weighted Plank",
+        "muscleGroup":  "Abs",
+        "equipment":  "Other",
+        "difficulty":  "Intermediate",
+        "description":  "Perform a standard plank with a weight plate placed on your back.",
+        "isCustom":  false
+    },
+    {
+        "id":  492,
+        "name":  "Hollow Body Rock (Weighted)",
+        "muscleGroup":  "Abs",
+        "equipment":  "Other",
+        "difficulty":  "Advanced",
+        "description":  "Perform hollow body rocks holding a small plate in your hands.",
+        "isCustom":  false
+    },
+    {
+        "id":  493,
+        "name":  "Stir the Pot (Stability Ball)",
+        "muscleGroup":  "Abs",
+        "equipment":  "Other",
+        "difficulty":  "Intermediate",
+        "description":  "Hold a plank with your forearms on a stability ball, making circular motions.",
+        "isCustom":  false
+    },
+    {
+        "id":  494,
+        "name":  "Copenhagen Plank (Elevated)",
+        "muscleGroup":  "Abs",
+        "equipment":  "Other",
+        "difficulty":  "Advanced",
+        "description":  "Side plank with top leg elevated on a bench, squeezing the adductors.",
+        "isCustom":  false
+    },
+    {
+        "id":  495,
+        "name":  "Copenhagen Plank (Knee Bend)",
+        "muscleGroup":  "Abs",
+        "equipment":  "Other",
+        "difficulty":  "Intermediate",
+        "description":  "Copenhagen plank with knee bent 90 degrees to reduce difficulty.",
+        "isCustom":  false
+    },
+    {
+        "id":  496,
+        "name":  "Cable Woodchop (High-to-Low)",
+        "muscleGroup":  "Abs",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Pull high cable diagonally downward across body to target obliques.",
+        "isCustom":  false
+    },
+    {
+        "id":  497,
+        "name":  "Cable Woodchop (Low-to-High)",
+        "muscleGroup":  "Abs",
+        "equipment":  "Cable",
+        "difficulty":  "Intermediate",
+        "description":  "Pull low cable diagonally upward across body.",
+        "isCustom":  false
+    },
+    {
+        "id":  498,
+        "name":  "Landmine Rainbow",
+        "muscleGroup":  "Abs",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Stand and rotate a landmine barbell in an arching rainbow motion to train core rotation.",
+        "isCustom":  false
+    },
+    {
+        "id":  499,
+        "name":  "Dumbbell Side Bend",
+        "muscleGroup":  "Abs",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Hold a dumbbell in one hand and bend laterally to target the obliques.",
+        "isCustom":  false
+    },
+    {
+        "id":  500,
+        "name":  "Kettlebell Side Bend",
+        "muscleGroup":  "Abs",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Beginner",
+        "description":  "Perform lateral side bends holding a kettlebell.",
+        "isCustom":  false
+    },
+    {
+        "id":  501,
+        "name":  "Cable Side Bend",
+        "muscleGroup":  "Abs",
+        "equipment":  "Cable",
+        "difficulty":  "Beginner",
+        "description":  "Stand sideways to a low pulley cable and perform side bends.",
+        "isCustom":  false
+    },
+    {
+        "id":  502,
+        "name":  "Decline Russian Twist",
+        "muscleGroup":  "Abs",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Advanced",
+        "description":  "Perform Russian twists sitting on a decline bench.",
+        "isCustom":  false
+    },
+    {
+        "id":  503,
+        "name":  "Ab Wheel Rollout from Knees",
+        "muscleGroup":  "Abs",
+        "equipment":  "Other",
+        "difficulty":  "Intermediate",
+        "description":  "Rollout using an ab wheel starting from a kneeling position.",
+        "isCustom":  false
+    },
+    {
+        "id":  504,
+        "name":  "Ab Wheel Rollout (Standing)",
+        "muscleGroup":  "Abs",
+        "equipment":  "Other",
+        "difficulty":  "Advanced",
+        "description":  "Rollout using an ab wheel starting from a standing position.",
+        "isCustom":  false
+    },
+    {
+        "id":  505,
+        "name":  "Hanging Knee Raise with Twist",
+        "muscleGroup":  "Abs",
+        "equipment":  "Bodyweight",
+        "difficulty":  "Intermediate",
+        "description":  "Raise knees while hanging, twisting them side to side for obliques.",
+        "isCustom":  false
+    },
+    {
+        "id":  506,
+        "name":  "Hanging Leg Raise (Toes to Bar)",
+        "muscleGroup":  "Abs",
+        "equipment":  "Bodyweight",
+        "difficulty":  "Advanced",
+        "description":  "Raise legs to touch the bar you are hanging from.",
+        "isCustom":  false
+    },
+    {
+        "id":  507,
+        "name":  "Lying Leg Raise with Hip Thrust",
+        "muscleGroup":  "Abs",
+        "equipment":  "Bodyweight",
+        "difficulty":  "Intermediate",
+        "description":  "Raise legs flat on back, pushing hips up at the top of the movement.",
+        "isCustom":  false
+    },
+    {
+        "id":  508,
+        "name":  "Reverse Crunch (Decline)",
+        "muscleGroup":  "Abs",
+        "equipment":  "Bodyweight",
+        "difficulty":  "Intermediate",
+        "description":  "Perform reverse crunches lying on a decline bench.",
+        "isCustom":  false
+    },
+    {
+        "id":  509,
+        "name":  "Swiss Ball Crunch",
+        "muscleGroup":  "Abs",
+        "equipment":  "Other",
+        "difficulty":  "Beginner",
+        "description":  "Crunch lying on a Swiss ball to increase the range of motion.",
+        "isCustom":  false
+    },
+    {
+        "id":  510,
+        "name":  "Weighted Sit-Up",
+        "muscleGroup":  "Abs",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Perform standard sit-ups holding a plate or dumbbell on your chest.",
+        "isCustom":  false
+    },
+    {
+        "id":  511,
+        "name":  "Kettlebell Snatch (Unilateral)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Advanced",
+        "description":  "Swing kettlebell overhead using one arm in a single fluid motion.",
+        "isCustom":  false
+    },
+    {
+        "id":  512,
+        "name":  "Dumbbell Snatch (Unilateral)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Pull dumbbell from floor to overhead using one arm.",
+        "isCustom":  false
+    },
+    {
+        "id":  513,
+        "name":  "Dumbbell Devil Press",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Advanced",
+        "description":  "Perform a burpee holding dumbbells, then swing/snatch dumbbells overhead.",
+        "isCustom":  false
+    },
+    {
+        "id":  514,
+        "name":  "Dumbbell Man Maker",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Advanced",
+        "description":  "Burpee, renegade row, clean, squat, and thruster combination using dumbbells.",
+        "isCustom":  false
+    },
+    {
+        "id":  515,
+        "name":  "Medicine Ball Slam (Overhead)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Other",
+        "difficulty":  "Beginner",
+        "description":  "Slam a heavy medicine ball into the floor with maximum power.",
+        "isCustom":  false
+    },
+    {
+        "id":  516,
+        "name":  "Tire Flip (Heavy)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Other",
+        "difficulty":  "Advanced",
+        "description":  "Lift and flip a large tractor tire for full body power.",
+        "isCustom":  false
+    },
+    {
+        "id":  517,
+        "name":  "Sled Push (Heavy)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Other",
+        "difficulty":  "Intermediate",
+        "description":  "Push a heavily loaded sled on turf.",
+        "isCustom":  false
+    },
+    {
+        "id":  518,
+        "name":  "Sled Drag (Heavy)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Other",
+        "difficulty":  "Intermediate",
+        "description":  "Drag a heavily loaded sled walking backwards or forwards.",
+        "isCustom":  false
+    },
+    {
+        "id":  519,
+        "name":  "Sandbag Clean and Press",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Other",
+        "difficulty":  "Advanced",
+        "description":  "Clean a heavy sandbag to your chest and press it overhead.",
+        "isCustom":  false
+    },
+    {
+        "id":  520,
+        "name":  "Sandbag Carry (Bear Hug)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Other",
+        "difficulty":  "Intermediate",
+        "description":  "Carry a heavy sandbag held tight to your chest.",
+        "isCustom":  false
+    },
+    {
+        "id":  521,
+        "name":  "Sandbag Carry (Overhead)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Other",
+        "difficulty":  "Advanced",
+        "description":  "Walk with a sandbag held straight overhead.",
+        "isCustom":  false
+    },
+    {
+        "id":  522,
+        "name":  "Battle Ropes (Slams)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Other",
+        "difficulty":  "Beginner",
+        "description":  "Raise and slam heavy battle ropes into the floor.",
+        "isCustom":  false
+    },
+    {
+        "id":  523,
+        "name":  "Battle Ropes (Tsunami Waves)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Other",
+        "difficulty":  "Beginner",
+        "description":  "Produce small fast wave patterns with battle ropes.",
+        "isCustom":  false
+    },
+    {
+        "id":  524,
+        "name":  "Keg Carry (Front Loaded)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Other",
+        "difficulty":  "Intermediate",
+        "description":  "Carry a loaded keg in front of you.",
+        "isCustom":  false
+    },
+    {
+        "id":  525,
+        "name":  "Farmer's Walk (Trap Bar)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Barbell",
+        "difficulty":  "Intermediate",
+        "description":  "Walk with a heavy trap bar loaded.",
+        "isCustom":  false
+    },
+    {
+        "id":  526,
+        "name":  "Farmer's Walk (Dumbbell)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Walk holding heavy dumbbells at your sides.",
+        "isCustom":  false
+    },
+    {
+        "id":  527,
+        "name":  "Suitcase Carry (Dumbbell)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Beginner",
+        "description":  "Walk holding a dumbbell in only one hand to challenge lateral core stability.",
+        "isCustom":  false
+    },
+    {
+        "id":  528,
+        "name":  "Suitcase Carry (Kettlebell)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Kettlebell",
+        "difficulty":  "Beginner",
+        "description":  "Walk holding a single kettlebell at your side.",
+        "isCustom":  false
+    },
+    {
+        "id":  529,
+        "name":  "Assault Bike Sprint",
+        "muscleGroup":  "Cardio",
+        "equipment":  "Machine",
+        "difficulty":  "Intermediate",
+        "description":  "Pedal and pump handles of an air bike at high intensity.",
+        "isCustom":  false
+    },
+    {
+        "id":  530,
+        "name":  "Rowing Machine Sprint",
+        "muscleGroup":  "Cardio",
+        "equipment":  "Machine",
+        "difficulty":  "Intermediate",
+        "description":  "Perform maximum intensity rowing intervals.",
+        "isCustom":  false
+    },
+    {
+        "id":  531,
+        "name":  "SkiErg Sprint",
+        "muscleGroup":  "Cardio",
+        "equipment":  "Machine",
+        "difficulty":  "Intermediate",
+        "description":  "Sprint intervals on the SkiErg machine.",
+        "isCustom":  false
+    },
+    {
+        "id":  532,
+        "name":  "Burpee Broad Jump",
+        "muscleGroup":  "Cardio",
+        "equipment":  "Bodyweight",
+        "difficulty":  "Advanced",
+        "description":  "Perform a burpee, then leap forward as far as possible.",
+        "isCustom":  false
+    },
+    {
+        "id":  533,
+        "name":  "Burpee Box Jump Over",
+        "muscleGroup":  "Cardio",
+        "equipment":  "Other",
+        "difficulty":  "Advanced",
+        "description":  "Perform a burpee, then jump onto and over a plyometric box.",
+        "isCustom":  false
+    },
+    {
+        "id":  534,
+        "name":  "Dumbbell Thruster (Heavy)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Dumbbell",
+        "difficulty":  "Intermediate",
+        "description":  "Perform heavy thrusters holding dumbbells.",
+        "isCustom":  false
+    },
+    {
+        "id":  535,
+        "name":  "Barbell Thruster (Heavy)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Perform heavy thrusters holding a barbell.",
+        "isCustom":  false
+    },
+    {
+        "id":  536,
+        "name":  "Clean and Jerk (Barbell)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Olympic lift lifting bar from floor to shoulders, then jerking overhead.",
+        "isCustom":  false
+    },
+    {
+        "id":  537,
+        "name":  "Clean and Press (Barbell)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Clean barbell to shoulders and press overhead.",
+        "isCustom":  false
+    },
+    {
+        "id":  538,
+        "name":  "Power Clean (Barbell)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Clean bar catching it in a power position (partial squat).",
+        "isCustom":  false
+    },
+    {
+        "id":  539,
+        "name":  "Hang Clean (Barbell)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Clean bar starting with it hanging above the knees.",
+        "isCustom":  false
+    },
+    {
+        "id":  540,
+        "name":  "Squat Clean (Barbell)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Barbell",
+        "difficulty":  "Advanced",
+        "description":  "Clean bar catching it in a deep squat position.",
+        "isCustom":  false
+    },
+    {
+        "id":  541,
+        "name":  "Muscle-Up (Bar)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Bodyweight",
+        "difficulty":  "Advanced",
+        "description":  "Pull body up and press over a pull-up bar.",
+        "isCustom":  false
+    },
+    {
+        "id":  542,
+        "name":  "Muscle-Up (Rings)",
+        "muscleGroup":  "Full Body",
+        "equipment":  "Bodyweight",
+        "difficulty":  "Advanced",
+        "description":  "Perform a muscle-up on gymnastics rings.",
+        "isCustom":  false
     }
 ];
-
