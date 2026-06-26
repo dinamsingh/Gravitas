@@ -773,6 +773,28 @@ window.GRAVITAS_GUIDES = {
         "Forward lean zyada mat karo."
     ]
   },
+  "single-arm overhead extension": {
+    youtubeId: "J0D7gfJa1qg",
+    benchAngle: null,
+    setup: [
+        "Back support wali short bench par baitho ya seedhe khade ho jao.",
+        "Dumbbell ko shoulder ke paas se direct upar overhead push karo.",
+        "Apna elbow facing forward lock rakho, upper arm ear ke close tight hold karo."
+    ],
+    execution: [
+        "Slowly negative control direction me forearm down pivot bend karo taaki dumbbell head ke peeche jaye.",
+        "Deep elbow joint stretch bottom position feel karein.",
+        "Tricep muscle power drive use karke arm ko wapas overhead straight lock karein."
+    ],
+    dos: [
+        "Elbow flaring out strictly minimize karein.",
+        "Breathing control range set contraction levels."
+    ],
+    donts: [
+        "Core loose mat chodo aur back bending prevent karein.",
+        "Momentum or heavy drops balance fail avoid karein."
+    ]
+  },
   "overhead cable extension": {
     youtubeId: "yh8jdR1SKpg",
     benchAngle: null,
