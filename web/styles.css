@@ -1970,3 +1970,48 @@ tr:last-child td {
   color: var(--ink);
   border-color: var(--muted);
 }
+
+/* Video Placeholder Card */
+.video-placeholder-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 36px 20px;
+  background: linear-gradient(135deg, var(--panel-strong) 0%, rgba(255,255,255,0.01) 100%);
+  border: 1px dashed rgba(216, 255, 67, 0.25);
+  border-radius: 14px;
+  min-height: 220px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.video-placeholder-card .placeholder-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 8px rgba(216,255,67,0.3));
+}
+
+.video-placeholder-card h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0 0 6px;
+}
+
+.video-placeholder-card p {
+  font-size: 0.85rem;
+  color: var(--muted);
+  max-width: 320px;
+  margin: 0 0 16px;
+  line-height: 1.4;
+}
+
+.video-placeholder-card .button.accent {
+  min-height: 40px !important;
+  min-width: 160px;
+  font-size: 0.85rem;
+  font-weight: 950;
+  box-shadow: 0 4px 12px rgba(216, 255, 67, 0.2);
+}
+

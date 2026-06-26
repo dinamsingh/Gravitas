@@ -1147,7 +1147,7 @@ function renderGuide() {
     return `<div class="empty-state">Exercise nahi mila. Wapas jao.</div>`;
   }
 
-  const guide = window.getExerciseGuide ? window.getExerciseGuide(exerciseId) : null;
+  const guide = window.getExerciseGuide ? window.getExerciseGuide(exercise.name) : null;
   const videoUrl = window.buildYouTubeUrl
     ? window.buildYouTubeUrl(guide?.youtubeId, exercise.name)
     : `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(exercise.name + " exercise tutorial form")}`;
@@ -1231,30 +1231,41 @@ function renderGuide() {
       <!-- Main layout: video + muscle map -->
       <div class="guide-main-layout">
         <div class="guide-video-col">
-          <div class="video-wrapper">
-            <iframe
-              id="guideIframe"
-              class="guide-video"
-              src="${videoUrl}"
-              title="${escapeHtml(exercise.name)} tutorial"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-              loading="lazy"
-            ></iframe>
-          </div>
-          <!-- Video creator controls -->
-          <div class="video-controls-bar">
-            <button class="video-control-btn active" data-video-select="curated" data-youtube-id="${guide?.youtubeId || ''}" data-name="${escapeHtml(exercise.name)}">
-              ⭐ Curated Guide
-            </button>
-            <button class="video-control-btn" data-video-select="search" data-name="${escapeHtml(exercise.name)}">
-              🔍 Other Creators
-            </button>
-            <a class="video-control-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' proper form tutorial')}" target="_blank" rel="noopener">
-              ↗ Open YouTube
-            </a>
-          </div>
+          ${guide?.youtubeId ? `
+            <div class="video-wrapper">
+              <iframe
+                id="guideIframe"
+                class="guide-video"
+                src="${videoUrl}"
+                title="${escapeHtml(exercise.name)} tutorial"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                loading="lazy"
+              ></iframe>
+            </div>
+            <!-- Video creator controls -->
+            <div class="video-controls-bar">
+              <button class="video-control-btn active" data-video-select="curated" data-youtube-id="${guide.youtubeId}" data-name="${escapeHtml(exercise.name)}">
+                ⭐ Curated Guide
+              </button>
+              <button class="video-control-btn" data-video-select="search" data-name="${escapeHtml(exercise.name)}">
+                🔍 Other Creators
+              </button>
+              <a class="video-control-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' proper form tutorial')}" target="_blank" rel="noopener">
+                ↗ Open YouTube
+              </a>
+            </div>
+          ` : `
+            <div class="video-placeholder-card">
+              <div class="placeholder-icon">📺</div>
+              <h3>Form Tutorial</h3>
+              <p>Is exercise ke liye curated video available nahi hai.</p>
+              <a class="button accent" href="https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' proper form tutorial')}" target="_blank" rel="noopener">
+                ▶ Watch on YouTube
+              </a>
+            </div>
+          `}
         </div>
         <div class="guide-info-col">
           ${renderMuscleMap(exercise.muscleGroup)}
@@ -1721,38 +1732,53 @@ function showFormVideoModal(exerciseId) {
   const exercise = exerciseById(exerciseId);
   if (!exercise) return;
 
-  const guide = window.getExerciseGuide ? window.getExerciseGuide(exerciseId) : null;
+  const guide = window.getExerciseGuide ? window.getExerciseGuide(exercise.name) : null;
   const videoUrl = window.buildYouTubeUrl
     ? window.buildYouTubeUrl(guide?.youtubeId, exercise.name)
     : `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(exercise.name + " exercise tutorial form")}`;
 
   const modal = document.getElementById("formVideoModal");
   document.getElementById("formVideoTitle").textContent = exercise.name + " — Form Guide";
-  document.getElementById("formVideoIframe").src = videoUrl;
 
-  // Configure modal video switcher
-  const curatedBtn = document.getElementById("modalVideoBtnCurated");
-  const searchBtn = document.getElementById("modalVideoBtnSearch");
-  const externalLink = document.getElementById("modalVideoLinkExternal");
+  const videoContent = document.getElementById("modalVideoContent");
+  const videoPlaceholder = document.getElementById("modalVideoPlaceholder");
+  const videoPlaceholderLink = document.getElementById("modalVideoPlaceholderLink");
   const iframe = document.getElementById("formVideoIframe");
 
-  curatedBtn.classList.add("active");
-  searchBtn.classList.remove("active");
-
   const query = encodeURIComponent(exercise.name + " proper form tutorial");
-  externalLink.href = `https://www.youtube.com/results?search_query=${query}`;
 
-  curatedBtn.onclick = () => {
+  if (guide?.youtubeId) {
+    videoContent.style.display = "";
+    videoPlaceholder.style.display = "none";
+    iframe.src = videoUrl;
+
+    // Configure modal video switcher
+    const curatedBtn = document.getElementById("modalVideoBtnCurated");
+    const searchBtn = document.getElementById("modalVideoBtnSearch");
+    const externalLink = document.getElementById("modalVideoLinkExternal");
+
     curatedBtn.classList.add("active");
     searchBtn.classList.remove("active");
-    iframe.src = videoUrl;
-  };
 
-  searchBtn.onclick = () => {
-    curatedBtn.classList.remove("active");
-    searchBtn.classList.add("active");
-    iframe.src = `https://www.youtube.com/embed?listType=search&list=${query}&rel=0&modestbranding=1&playsinline=1`;
-  };
+    externalLink.href = `https://www.youtube.com/results?search_query=${query}`;
+
+    curatedBtn.onclick = () => {
+      curatedBtn.classList.add("active");
+      searchBtn.classList.remove("active");
+      iframe.src = videoUrl;
+    };
+
+    searchBtn.onclick = () => {
+      curatedBtn.classList.remove("active");
+      searchBtn.classList.add("active");
+      iframe.src = `https://www.youtube.com/embed?listType=search&list=${query}&rel=0&modestbranding=1&playsinline=1`;
+    };
+  } else {
+    videoContent.style.display = "none";
+    videoPlaceholder.style.display = "";
+    videoPlaceholderLink.href = `https://www.youtube.com/results?search_query=${query}`;
+    iframe.src = "";
+  }
 
   // Bench angle info
   const benchEl = document.getElementById("formVideoBenchAngle");

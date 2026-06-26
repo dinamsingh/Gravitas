@@ -68,19 +68,30 @@
           <button class="form-video-close" id="formVideoClose" type="button" aria-label="Close">✕</button>
         </div>
         <div class="form-video-body">
-          <div class="video-wrapper">
-            <iframe id="formVideoIframe" class="guide-video" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <div id="modalVideoContent">
+            <div class="video-wrapper">
+              <iframe id="formVideoIframe" class="guide-video" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <!-- Video creator controls -->
+            <div class="video-controls-bar" style="margin-top: 12px; margin-bottom: 4px;">
+              <button id="modalVideoBtnCurated" class="video-control-btn active" type="button">
+                ⭐ Curated Guide
+              </button>
+              <button id="modalVideoBtnSearch" class="video-control-btn" type="button">
+                🔍 Other Creators
+              </button>
+              <a id="modalVideoLinkExternal" class="video-control-link" href="" target="_blank" rel="noopener">
+                ↗ Open YouTube
+              </a>
+            </div>
           </div>
-          <!-- Video creator controls -->
-          <div class="video-controls-bar" style="margin-top: 12px; margin-bottom: 4px;">
-            <button id="modalVideoBtnCurated" class="video-control-btn active" type="button">
-              ⭐ Curated Guide
-            </button>
-            <button id="modalVideoBtnSearch" class="video-control-btn" type="button">
-              🔍 Other Creators
-            </button>
-            <a id="modalVideoLinkExternal" class="video-control-link" href="" target="_blank" rel="noopener">
-              ↗ Open YouTube
+          
+          <div id="modalVideoPlaceholder" class="video-placeholder-card" style="display:none">
+            <div class="placeholder-icon">📺</div>
+            <h3>Form Tutorial</h3>
+            <p>Is exercise ke liye curated video available nahi hai.</p>
+            <a id="modalVideoPlaceholderLink" class="button accent" href="" target="_blank" rel="noopener">
+              ▶ Watch on YouTube
             </a>
           </div>
         </div>
