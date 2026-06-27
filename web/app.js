@@ -5,7 +5,8 @@ const DEFAULT_SETTINGS = {
   unit: "kg",
   theme: "dark",
   defaultSets: 3,
-  restTimer: 60
+  restTimer: 60,
+  googleApiKey: ""
 };
 
 const FALLBACK_EXERCISES = [
@@ -218,6 +219,7 @@ function normalizeState(value) {
     plans: Array.isArray(value.plans) ? value.plans : [],
     sessions: Array.isArray(value.sessions) ? value.sessions : [],
     logs: Array.isArray(value.logs) ? value.logs : [],
+    aiChatHistory: Array.isArray(value.aiChatHistory) ? value.aiChatHistory : [],
     settings: { ...DEFAULT_SETTINGS, ...(value.settings || {}) },
     activeSplit: value.activeSplit || "ppl",
     activeWorkout: value.activeWorkout || null,
@@ -435,7 +437,8 @@ function render() {
     history: renderHistory,
     stats: renderStats,
     settings: renderSettings,
-    guide: renderGuide
+    guide: renderGuide,
+    aiCoach: renderAiCoach
   };
   view.innerHTML = (screens[route] || renderHome)();
   attachScreenHandlers(route);
@@ -451,7 +454,8 @@ function routeTitle(route) {
     history: "Workout History",
     stats: "Progress",
     settings: "Profile",
-    guide: "Form Guide"
+    guide: "Form Guide",
+    aiCoach: "AI Coach"
   }[route] || "Home";
 }
 
@@ -1252,7 +1256,6 @@ function renderGuide() {
                 loading="lazy"
               ></iframe>
             </div>
-            <!-- Video creator controls -->
             <div class="video-controls-bar">
               <button class="video-control-btn active" data-video-select="curated" data-youtube-id="${guide.youtubeId}" data-name="${escapeHtml(exercise.name)}">
                 ⭐ Curated Guide
@@ -1264,6 +1267,7 @@ function renderGuide() {
                 ↗ Open YouTube
               </a>
             </div>
+            <div id="guideYtResults"></div>
           ` : `
             <div class="video-placeholder-card">
               <div class="placeholder-icon">📺</div>
@@ -1315,20 +1319,33 @@ function attachGuideHandlers(view) {
       view.querySelectorAll("[data-video-select]").forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
 
+      const ytResultsEl = view.querySelector("#guideYtResults");
+
       if (type === "curated") {
         const youtubeId = btn.dataset.youtubeId;
         const name = btn.dataset.name;
         iframe.src = window.buildYouTubeUrl ? window.buildYouTubeUrl(youtubeId, name) : `https://www.youtube.com/embed/${youtubeId}`;
+        if (ytResultsEl) ytResultsEl.innerHTML = "";
       } else if (type === "search") {
         const name = btn.dataset.name;
-        const query = encodeURIComponent(name + " Jeet Selal");
-        iframe.src = `https://www.youtube.com/embed?listType=search&list=${query}&rel=0&modestbranding=1&playsinline=1`;
+        if (getActiveGoogleApiKey() && ytResultsEl) {
+          loadYtResults(ytResultsEl, name, iframe);
+        } else {
+          const query = encodeURIComponent(name + " Jeet Selal");
+          iframe.src = `https://www.youtube.com/embed?listType=search&list=${query}&rel=0&modestbranding=1&playsinline=1`;
+        }
       }
     });
   });
 }
 
 function renderSettings() {
+  const apiKey = state.settings.googleApiKey || "";
+  const fallbackKey = window.GRAVITAS_FIREBASE_CONFIG?.apiKey || "";
+  const activeKey = apiKey || fallbackKey;
+  const keyStatus = activeKey
+    ? `<span class="api-key-status connected">✓ Connected ${!apiKey ? "(Firebase Key)" : ""}</span>`
+    : `<span class="api-key-status missing">✕ Not set</span>`;
   return `
     <div class="profile-layout">
       <section class="panel">
@@ -1341,6 +1358,14 @@ function renderSettings() {
           <label class="label">Weight Unit<select class="control" name="unit"><option ${state.settings.unit === "kg" ? "selected" : ""}>kg</option><option ${state.settings.unit === "lbs" ? "selected" : ""}>lbs</option></select></label>
           <label class="label">Theme<select class="control" name="theme"><option value="dark" ${state.settings.theme === "dark" ? "selected" : ""}>dark</option><option value="light" ${state.settings.theme === "light" ? "selected" : ""}>light</option></select></label>
           <label class="label">Default Sets<input class="control" name="defaultSets" value="${state.settings.defaultSets}" inputmode="numeric" /></label>
+          <div class="api-key-section">
+            <h4>🔑 Google API Key ${keyStatus}</h4>
+            <p class="api-key-hint">YouTube video search aur AI Coach ke liye ek Google API key chahiye. <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" style="color:var(--accent)">Google Cloud Console</a> se free key banao.</p>
+            <div class="api-key-row">
+              <label>API Key</label>
+              <input type="password" name="googleApiKey" value="${escapeHtml(apiKey)}" placeholder="AIzaSy..." autocomplete="off" />
+            </div>
+          </div>
           <button class="button primary" type="submit">Save Profile</button>
           <button class="button" type="button" data-action="logout">Logout</button>
         </form>
@@ -1348,6 +1373,343 @@ function renderSettings() {
     </div>
   `;
 }
+
+// ── YouTube Data API v3 Search ──
+const _ytSearchCache = {};
+
+function getActiveGoogleApiKey() {
+  return state.settings.googleApiKey || window.GRAVITAS_FIREBASE_CONFIG?.apiKey || "";
+}
+
+async function searchYouTubeVideos(query, maxResults = 6) {
+  const apiKey = getActiveGoogleApiKey();
+  if (!apiKey) return null;
+
+  const cacheKey = query.toLowerCase().trim();
+  if (_ytSearchCache[cacheKey]) return _ytSearchCache[cacheKey];
+
+  const params = new URLSearchParams({
+    part: "snippet",
+    q: query + " exercise form tutorial",
+    type: "video",
+    maxResults: String(maxResults),
+    videoCategoryId: "17",
+    key: apiKey
+  });
+
+  const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params}`);
+  if (!response.ok) {
+    console.warn("YouTube API error", response.status);
+    return null;
+  }
+
+  const data = await response.json();
+  const results = (data.items || []).map((item) => ({
+    videoId: item.id?.videoId,
+    title: item.snippet?.title || "",
+    thumbnail: item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url || "",
+    channel: item.snippet?.channelTitle || ""
+  })).filter((r) => r.videoId);
+
+  _ytSearchCache[cacheKey] = results;
+  return results;
+}
+
+function renderYtResultsGrid(containerId) {
+  return `<div id="${containerId}" class="yt-results-container"></div>`;
+}
+
+async function loadYtResults(containerEl, query, iframeEl) {
+  if (!containerEl) return;
+  containerEl.innerHTML = `<div class="yt-search-loading"><div class="yt-search-spinner"></div> Searching videos...</div>`;
+
+  const results = await searchYouTubeVideos(query);
+  if (!results || !results.length) {
+    containerEl.innerHTML = `<p style="font-size:0.78rem;color:var(--muted);text-align:center;padding:12px;">No API key set or no results found. Go to Profile to add your Google API key.</p>`;
+    return;
+  }
+
+  containerEl.innerHTML = `<div class="yt-results-grid">${results.map((r, i) => `
+    <div class="yt-result-card${i === 0 ? " active" : ""}" data-yt-video-id="${escapeHtml(r.videoId)}">
+      <img class="yt-result-thumb" src="${escapeHtml(r.thumbnail)}" alt="" loading="lazy" />
+      <div class="yt-result-title">${escapeHtml(r.title)}</div>
+    </div>
+  `).join("")}</div>`;
+
+  // Load first result into iframe
+  if (iframeEl && results[0]) {
+    iframeEl.src = `https://www.youtube.com/embed/${results[0].videoId}?rel=0&modestbranding=1&playsinline=1`;
+  }
+
+  // Click handlers
+  containerEl.querySelectorAll("[data-yt-video-id]").forEach((card) => {
+    card.addEventListener("click", () => {
+      containerEl.querySelectorAll(".yt-result-card").forEach((c) => c.classList.remove("active"));
+      card.classList.add("active");
+      if (iframeEl) {
+        iframeEl.src = `https://www.youtube.com/embed/${card.dataset.ytVideoId}?rel=0&modestbranding=1&playsinline=1`;
+      }
+    });
+  });
+}
+
+// ── Gemini AI API ──
+let aiSending = false;
+
+function getGeminiSystemPrompt() {
+  const today = todayName();
+  const plans = state.plans.filter((p) => p.dayOfWeek === today).map(planWithExercise);
+  const planSummary = plans.length
+    ? plans.map((p) => `${p.exercise.name || "Exercise"} (${p.exercise.muscleGroup || ""})`).join(", ")
+    : "No workout planned for today";
+
+  return `You are GRAVITAS AI Coach — a friendly, knowledgeable fitness assistant inside a gym tracker app.
+Your role: help users with workout advice, exercise form tips, nutrition guidance, and training programming.
+Keep responses concise (2-4 short paragraphs max). Use bullet points for lists.
+Mix Hindi and English naturally (Hinglish) when it feels right, since the app uses Hinglish.
+
+User context:
+- Today is ${today}
+- Today's planned workout: ${planSummary}
+- Weight unit preference: ${state.settings.unit}
+- Total logged sessions: ${state.sessions.length}
+- Current workout streak: ${workoutStreak()} days`;
+}
+
+async function sendToGemini(userMessage) {
+  const apiKey = getActiveGoogleApiKey();
+  if (!apiKey) throw new Error("Google API key not configured. Go to Profile to add it.");
+
+  const systemPrompt = getGeminiSystemPrompt();
+
+  // Build conversation history for context (last 10 messages)
+  const recentHistory = state.aiChatHistory.slice(-10);
+  const contents = [];
+
+  // Add conversation history
+  for (const msg of recentHistory) {
+    contents.push({
+      role: msg.role === "assistant" ? "model" : "user",
+      parts: [{ text: msg.text }]
+    });
+  }
+
+  // Add current user message
+  contents.push({
+    role: "user",
+    parts: [{ text: userMessage }]
+  });
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: systemPrompt }] },
+        contents,
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 800,
+          topP: 0.9
+        }
+      })
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const errorMsg = errorData?.error?.message || `API error ${response.status}`;
+    throw new Error(errorMsg);
+  }
+
+  const data = await response.json();
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error("Empty response from Gemini");
+  return text;
+}
+
+function formatAiText(text) {
+  // Simple markdown-to-HTML: bold, bullets, paragraphs
+  return text
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/^[\-\•]\s+(.+)$/gm, "<li>$1</li>")
+    .replace(/(<li>.*<\/li>\n?)+/gs, (match) => `<ul>${match}</ul>`)
+    .replace(/^\d+\.\s+(.+)$/gm, "<li>$1</li>")
+    .split(/\n{2,}/)
+    .map((p) => {
+      p = p.trim();
+      if (!p) return "";
+      if (p.startsWith("<ul>") || p.startsWith("<ol>") || p.startsWith("<li>")) return p;
+      return `<p>${p}</p>`;
+    })
+    .join("");
+}
+
+// ── AI Coach Screen ──
+const AI_CHIPS = [
+  "💪 Aaj ka best chest workout?",
+  "🏋️ Squat form kaise fix karein?",
+  "🍗 Post-workout mein kya khaana chahiye?",
+  "🔄 Bench Press ka alternative batao",
+  "📊 Mere progress ke liye tips",
+  "🤕 Shoulder pain mein kya karein?"
+];
+
+function renderAiCoach() {
+  const messages = state.aiChatHistory;
+  const hasMessages = messages.length > 0;
+  const apiKey = getActiveGoogleApiKey();
+
+  const messagesHtml = hasMessages
+    ? messages.map((msg) => `
+        <div class="ai-msg ${msg.role}">
+          <div class="ai-bubble">${msg.role === "user" ? escapeHtml(msg.text) : formatAiText(msg.text)}</div>
+          <div class="ai-msg-time">${new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
+        </div>
+      `).join("")
+    : "";
+
+  const welcomeHtml = !hasMessages ? `
+    <div class="ai-welcome">
+      <div class="ai-welcome-icon">🤖</div>
+      <h3>GRAVITAS AI Coach</h3>
+      <p>Workout advice, form tips, nutrition guidance — kuch bhi pucho!</p>
+    </div>
+  ` : "";
+
+  return `
+    <div class="ai-chat-container">
+      <div class="ai-chat-header">
+        <div class="ai-chat-avatar">🤖</div>
+        <div class="ai-chat-header-info">
+          <h3>AI Coach</h3>
+          <p>Powered by Gemini${!apiKey ? " · <span style='color:var(--heat)'>API key required</span>" : ""}</p>
+        </div>
+        ${hasMessages ? `<button class="ai-clear-btn" id="aiClearChat" type="button">🗑️ Clear</button>` : ""}
+      </div>
+
+      <div class="ai-chat-messages" id="aiMessages">
+        ${welcomeHtml}
+        ${messagesHtml}
+      </div>
+
+      <div class="ai-chips" id="aiChips">
+        ${AI_CHIPS.map((chip) => `<button class="ai-chip" type="button">${chip}</button>`).join("")}
+      </div>
+
+      <div class="ai-input-row">
+        <input type="text" id="aiInput" placeholder="${apiKey ? "Ask your AI Coach..." : "Add API key in Profile first"}" ${!apiKey ? "disabled" : ""} autocomplete="off" />
+        <button class="ai-send-btn" id="aiSend" type="button" ${!apiKey ? "disabled" : ""}>➤</button>
+      </div>
+    </div>
+  `;
+}
+
+async function handleAiSend(view) {
+  const input = view.querySelector("#aiInput");
+  const messagesEl = view.querySelector("#aiMessages");
+  const sendBtn = view.querySelector("#aiSend");
+  if (!input || aiSending) return;
+
+  const text = input.value.trim();
+  if (!text) return;
+
+  // Add user message
+  state.aiChatHistory.push({ role: "user", text, timestamp: Date.now() });
+  input.value = "";
+  aiSending = true;
+  if (sendBtn) sendBtn.disabled = true;
+
+  // Render user message
+  const userMsgEl = document.createElement("div");
+  userMsgEl.className = "ai-msg user";
+  userMsgEl.innerHTML = `
+    <div class="ai-bubble">${escapeHtml(text)}</div>
+    <div class="ai-msg-time">${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
+  `;
+
+  // Remove welcome if present
+  const welcome = messagesEl.querySelector(".ai-welcome");
+  if (welcome) welcome.remove();
+
+  messagesEl.appendChild(userMsgEl);
+
+  // Show typing indicator
+  const typingEl = document.createElement("div");
+  typingEl.className = "ai-msg assistant";
+  typingEl.id = "aiTyping";
+  typingEl.innerHTML = `<div class="ai-bubble"><div class="ai-typing"><div class="ai-typing-dot"></div><div class="ai-typing-dot"></div><div class="ai-typing-dot"></div></div></div>`;
+  messagesEl.appendChild(typingEl);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+
+  // Hide chips after first message
+  const chipsEl = view.querySelector("#aiChips");
+  if (chipsEl && state.aiChatHistory.length >= 1) chipsEl.style.display = "none";
+
+  try {
+    const reply = await sendToGemini(text);
+    state.aiChatHistory.push({ role: "assistant", text: reply, timestamp: Date.now() });
+    saveState();
+
+    // Replace typing with actual response
+    typingEl.innerHTML = `
+      <div class="ai-bubble">${formatAiText(reply)}</div>
+      <div class="ai-msg-time">${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
+    `;
+  } catch (error) {
+    typingEl.innerHTML = `<div class="ai-error">⚠️ ${escapeHtml(error.message)}</div>`;
+  } finally {
+    aiSending = false;
+    if (sendBtn) sendBtn.disabled = false;
+    input.focus();
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+}
+
+function attachAiCoachHandlers(view) {
+  const input = view.querySelector("#aiInput");
+  const sendBtn = view.querySelector("#aiSend");
+
+  if (sendBtn) sendBtn.addEventListener("click", () => handleAiSend(view));
+  if (input) {
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleAiSend(view);
+      }
+    });
+    // Auto-focus input
+    setTimeout(() => input.focus(), 100);
+  }
+
+  // Quick-action chips
+  view.querySelectorAll(".ai-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      if (input) {
+        input.value = chip.textContent.trim();
+        handleAiSend(view);
+      }
+    });
+  });
+
+  // Clear chat
+  const clearBtn = view.querySelector("#aiClearChat");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      state.aiChatHistory = [];
+      saveState();
+      render();
+      toast("Chat cleared");
+    });
+  }
+
+  // Scroll to bottom
+  const messagesEl = view.querySelector("#aiMessages");
+  if (messagesEl) messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
 
 function authErrorMessage(error) {
   const code = String(error?.code || "");
@@ -1441,6 +1803,7 @@ function attachScreenHandlers(route) {
   if (route === "stats") attachStatsHandlers(view);
   if (route === "settings") attachSettingsHandlers(view);
   if (route === "guide") attachGuideHandlers(view);
+  if (route === "aiCoach") attachAiCoachHandlers(view);
 
   if (state.ui.keepLibraryFocus) {
     const search = view.querySelector("#librarySearch");
@@ -1790,12 +2153,27 @@ function showFormVideoModal(exerciseId) {
       curatedBtn.classList.add("active");
       searchBtn.classList.remove("active");
       iframe.src = videoUrl;
+      // Clear any YouTube search results
+      const modalYtResults = modal.querySelector("#modalYtResults");
+      if (modalYtResults) modalYtResults.innerHTML = "";
     };
 
     searchBtn.onclick = () => {
       curatedBtn.classList.remove("active");
       searchBtn.classList.add("active");
-      iframe.src = `https://www.youtube.com/embed?listType=search&list=${query}&rel=0&modestbranding=1&playsinline=1`;
+      if (getActiveGoogleApiKey()) {
+        // Use YouTube API search
+        let resultsEl = modal.querySelector("#modalYtResults");
+        if (!resultsEl) {
+          resultsEl = document.createElement("div");
+          resultsEl.id = "modalYtResults";
+          const controlsBar = modal.querySelector(".video-controls-bar");
+          if (controlsBar) controlsBar.insertAdjacentElement("afterend", resultsEl);
+        }
+        loadYtResults(resultsEl, exercise.name, iframe);
+      } else {
+        iframe.src = `https://www.youtube.com/embed?listType=search&list=${query}&rel=0&modestbranding=1&playsinline=1`;
+      }
     };
   } else {
     videoContent.style.display = "none";
@@ -1978,7 +2356,8 @@ function attachSettingsHandlers(view) {
       unit: data.unit,
       theme: data.theme,
       defaultSets: Math.max(1, Math.round(numberValue(data.defaultSets, 3))),
-      restTimer: state.settings.restTimer
+      restTimer: state.settings.restTimer,
+      googleApiKey: (data.googleApiKey || "").trim()
     };
     toast("Profile saved");
     render();
