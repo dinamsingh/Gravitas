@@ -1277,6 +1277,6 @@ window.buildYouTubeUrl = function(youtubeId, exerciseName) {
     return `https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1&playsinline=1`;
   }
   // Fallback: search embed for custom exercises
-  const query = encodeURIComponent((exerciseName || "exercise") + " proper form tutorial");
+  const query = encodeURIComponent((exerciseName || "exercise") + " Jeet Selal");
   return `https://www.youtube.com/embed?listType=search&list=${query}&rel=0&modestbranding=1&playsinline=1`;
 };

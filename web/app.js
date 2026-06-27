@@ -1158,7 +1158,7 @@ function renderGuide() {
   const guide = window.getExerciseGuide ? window.getExerciseGuide(exercise.name) : null;
   const videoUrl = window.buildYouTubeUrl
     ? window.buildYouTubeUrl(guide?.youtubeId, exercise.name)
-    : `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(exercise.name + " exercise tutorial form")}`;
+    : `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(exercise.name + " Jeet Selal")}`;
 
   // Bench angle card
   const benchAngleHtml = guide?.benchAngle ? (() => {
@@ -1260,7 +1260,7 @@ function renderGuide() {
               <button class="video-control-btn" data-video-select="search" data-name="${escapeHtml(exercise.name)}">
                 🔍 Other Creators
               </button>
-              <a class="video-control-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' proper form tutorial')}" target="_blank" rel="noopener">
+              <a class="video-control-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' Jeet Selal')}" target="_blank" rel="noopener">
                 ↗ Open YouTube
               </a>
             </div>
@@ -1269,7 +1269,7 @@ function renderGuide() {
               <div class="placeholder-icon">📺</div>
               <h3>Form Tutorial</h3>
               <p>Is exercise ke liye curated video available nahi hai.</p>
-              <a class="button accent" href="https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' proper form tutorial')}" target="_blank" rel="noopener">
+              <a class="button accent" href="https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' Jeet Selal')}" target="_blank" rel="noopener">
                 ▶ Watch on YouTube
               </a>
             </div>
@@ -1321,7 +1321,7 @@ function attachGuideHandlers(view) {
         iframe.src = window.buildYouTubeUrl ? window.buildYouTubeUrl(youtubeId, name) : `https://www.youtube.com/embed/${youtubeId}`;
       } else if (type === "search") {
         const name = btn.dataset.name;
-        const query = encodeURIComponent(name + " proper form tutorial");
+        const query = encodeURIComponent(name + " Jeet Selal");
         iframe.src = `https://www.youtube.com/embed?listType=search&list=${query}&rel=0&modestbranding=1&playsinline=1`;
       }
     });
@@ -1759,7 +1759,7 @@ function showFormVideoModal(exerciseId) {
   const guide = window.getExerciseGuide ? window.getExerciseGuide(exercise.name) : null;
   const videoUrl = window.buildYouTubeUrl
     ? window.buildYouTubeUrl(guide?.youtubeId, exercise.name)
-    : `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(exercise.name + " exercise tutorial form")}`;
+    : `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(exercise.name + " Jeet Selal")}`;
 
   const modal = document.getElementById("formVideoModal");
   document.getElementById("formVideoTitle").textContent = exercise.name + " — Form Guide";
@@ -1769,7 +1769,7 @@ function showFormVideoModal(exerciseId) {
   const videoPlaceholderLink = document.getElementById("modalVideoPlaceholderLink");
   const iframe = document.getElementById("formVideoIframe");
 
-  const query = encodeURIComponent(exercise.name + " proper form tutorial");
+  const query = encodeURIComponent(exercise.name + " Jeet Selal");
 
   if (guide?.youtubeId) {
     videoContent.style.display = "";
