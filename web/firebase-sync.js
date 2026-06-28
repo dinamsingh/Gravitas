@@ -204,11 +204,17 @@
     await auth.signOut();
   }
 
+  async function resetPassword(email) {
+    if (!auth) throw new Error("Firebase is not ready");
+    await auth.sendPasswordResetEmail(email);
+  }
+
   window.GRAVITAS_FIREBASE = {
     connect,
     save,
     register,
     login,
-    logout
+    logout,
+    resetPassword
   };
 })();

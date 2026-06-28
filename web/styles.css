@@ -501,6 +501,24 @@ h3 {
   box-shadow: 0 16px 36px rgba(216, 255, 67, 0.2);
 }
 
+.auth-forgot-link {
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 180ms ease;
+  width: max-content;
+  align-self: center;
+}
+
+.auth-forgot-link:hover {
+  color: var(--accent);
+}
+
 .auth-note {
   margin: 0;
   color: var(--muted);

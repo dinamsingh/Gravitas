@@ -365,6 +365,33 @@ function renderAuthScreen(viewMode = "form") {
   }
 
   const isRegister = authMode === "register";
+  const isForgot = authMode === "forgot";
+
+  if (isForgot) {
+    return `
+      <section class="auth-screen">
+        <div class="auth-card">
+          <div class="auth-hero">
+            <p class="eyebrow">GRAVITAS CLOUD</p>
+            <h3>Reset your password</h3>
+            <p class="muted">Apne registered email address ko enter karo. Password reset link email ho jayega.</p>
+          </div>
+          <form id="authForm" class="auth-form">
+            <label class="label">Email<input class="control" name="email" type="email" autocomplete="email" placeholder="you@example.com" required /></label>
+            <div class="auth-actions">
+              <button class="button primary auth-main-action" type="submit">Send Reset Link</button>
+              <button class="auth-forgot-link" type="button" data-auth-mode="login" style="margin-top: 6px; text-align: center;">Back to Login</button>
+            </div>
+          </form>
+          <div class="sync-card">
+            <span>Firebase</span>
+            <strong id="cloudStatus">${escapeHtml(cloudStatus)}</strong>
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
   return `
     <section class="auth-screen">
       <div class="auth-card">
@@ -386,6 +413,9 @@ function renderAuthScreen(viewMode = "form") {
           ` : ""}
           <label class="label">Email<input class="control" name="email" type="email" autocomplete="email" placeholder="you@example.com" required /></label>
           <label class="label">Password<input class="control" name="password" type="password" autocomplete="current-password" placeholder="Minimum 6 characters" minlength="6" required /></label>
+          ${!isRegister ? `
+            <button class="auth-forgot-link" type="button" data-auth-mode="forgot" style="align-self: flex-end; margin-top: -6px; margin-bottom: 4px;">Forgot Password?</button>
+          ` : ""}
           <div class="auth-actions">
             <button class="button primary auth-main-action" type="submit">${isRegister ? "Create Account" : "Login"}</button>
           </div>
@@ -410,7 +440,10 @@ function render() {
     return;
   }
   if (!authUser) {
-    document.getElementById("screenTitle").textContent = authMode === "register" ? "Create Account" : "Login";
+    let screenTitle = "Login";
+    if (authMode === "register") screenTitle = "Create Account";
+    else if (authMode === "forgot") screenTitle = "Reset Password";
+    document.getElementById("screenTitle").textContent = screenTitle;
     document.getElementById("todayPill").textContent = "Cloud account";
     document.querySelectorAll(".bottom-tab").forEach((button) => button.classList.remove("active"));
     document.getElementById("view").innerHTML = renderAuthScreen();
@@ -1740,11 +1773,30 @@ function attachAuthHandlers() {
     const email = String(data.email || "").trim();
     const password = String(data.password || "");
     const submitButton = form.querySelector(".auth-main-action");
+
     if (authMode === "register" && (!name || !phone)) {
       toast("Create account ke liye name aur phone required hai");
       return;
     }
+
     if (submitButton) submitButton.disabled = true;
+
+    if (authMode === "forgot") {
+      updateCloudStatus("Sending reset link");
+      try {
+        await window.GRAVITAS_FIREBASE.resetPassword(email);
+        toast("Password reset email sent. Check your inbox!");
+        authMode = "login";
+        render();
+      } catch (error) {
+        updateCloudStatus("Reset failed");
+        toast(authErrorMessage(error));
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+      }
+      return;
+    }
+
     updateCloudStatus(authMode === "register" ? "Creating account" : "Logging in");
 
     try {
