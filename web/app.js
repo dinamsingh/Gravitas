@@ -308,6 +308,45 @@ function exerciseByName(name) {
   return state.exercises.find((exercise) => exercise.name.toLowerCase() === String(name).toLowerCase());
 }
 
+// ── Exercise demonstration images ──
+const MUSCLE_VISUALS = {
+  chest: "#e6b8a6", back: "#a8c4e6", legs: "#aee0c0", glutes: "#e6c2a0",
+  shoulders: "#c9b6e6", biceps: "#a6d8e6", triceps: "#e6a6c2", abs: "#dde6a6",
+  core: "#dde6a6", calves: "#b6e6d0", cardio: "#e6a6a6", "full body": "#c2d4b0",
+  "functional training": "#d0c2a0"
+};
+
+function muscleColor(muscleGroup) {
+  return MUSCLE_VISUALS[String(muscleGroup || "").toLowerCase()] || "#cdd8d0";
+}
+
+function exerciseImageUrl(exercise) {
+  if (!exercise) return null;
+  const fromDb = window.GRAVITAS_EXERCISE_IMAGES ? window.GRAVITAS_EXERCISE_IMAGES.resolve(exercise.name) : null;
+  if (fromDb) return fromDb;
+  const guide = window.getExerciseGuide ? window.getExerciseGuide(exercise.name) : null;
+  if (guide && guide.youtubeId) return `https://img.youtube.com/vi/${guide.youtubeId}/mqdefault.jpg`;
+  return null;
+}
+
+// Renders a thumbnail. Falls back to a muscle-coloured icon if no image / load fails.
+function exerciseThumb(exercise, size = "") {
+  const url = exerciseImageUrl(exercise);
+  const color = muscleColor(exercise && exercise.muscleGroup);
+  const cls = "ex-thumb" + (size ? " ex-thumb-" + size : "");
+  const img = url
+    ? `<img src="${escapeHtml(url)}" alt="${escapeHtml(exercise.name)}" loading="lazy" onerror="this.remove()" />`
+    : "";
+  return `<div class="${cls}" style="--mg:${color}"><span class="ex-thumb-ico">🏋️</span>${img}</div>`;
+}
+
+// Re-render once exercise images have loaded (first load / after cache refresh)
+window.GRAVITAS_ON_IMAGES_READY = function () {
+  try {
+    if (authReady && authUser) render();
+  } catch (e) { /* ignore */ }
+};
+
 function planWithExercise(plan) {
   const exercise = exerciseById(plan.exerciseId) || {};
   return { ...plan, exercise };
@@ -471,7 +510,8 @@ function render() {
     stats: renderStats,
     settings: renderSettings,
     guide: renderGuide,
-    aiCoach: renderAiCoach
+    aiCoach: renderAiCoach,
+    formCheck: renderFormCheck
   };
   view.innerHTML = (screens[route] || renderHome)();
   attachScreenHandlers(route);
@@ -488,7 +528,8 @@ function routeTitle(route) {
     stats: "Progress",
     settings: "Profile",
     guide: "Form Guide",
-    aiCoach: "AI Coach"
+    aiCoach: "AI Coach",
+    formCheck: "AI Form Check"
   }[route] || "Home";
 }
 
@@ -530,11 +571,16 @@ function renderHome() {
             <div class="card-list">
               ${plans.map((plan) => `
                 <article class="item-card compact">
-                  <div class="row between">
-                    <strong>${escapeHtml(plan.exercise.name || "Exercise")}</strong>
-                    <span class="badge">${escapeHtml(plan.exercise.muscleGroup || "")}</span>
+                  <div class="ex-row">
+                    ${exerciseThumb(plan.exercise)}
+                    <div class="ex-row-text">
+                      <div class="row between">
+                        <strong>${escapeHtml(plan.exercise.name || "Exercise")}</strong>
+                        <span class="badge">${escapeHtml(plan.exercise.muscleGroup || "")}</span>
+                      </div>
+                      <p class="muted">${plan.numberOfSets} sets x ${plan.targetReps} reps at ${plan.targetWeight || 0}${state.settings.unit}</p>
+                    </div>
                   </div>
-                  <p class="muted">${plan.numberOfSets} sets x ${plan.targetReps} reps at ${plan.targetWeight || 0}${state.settings.unit}</p>
                 </article>
               `).join("")}
             </div>
@@ -601,8 +647,13 @@ function renderLibrary() {
               ${exercise.isCustom ? `<button class="button heat small" type="button" data-delete-exercise="${exercise.id}">Delete</button>` : `<span class="badge">Built-in</span>`}
             </div>
           </div>
-          <h3>${escapeHtml(exercise.name)}</h3>
-          <p class="muted">${escapeHtml(exercise.description)}</p>
+          <div class="ex-row">
+            ${exerciseThumb(exercise)}
+            <div class="ex-row-text">
+              <h3>${escapeHtml(exercise.name)}</h3>
+              <p class="muted">${escapeHtml(exercise.description)}</p>
+            </div>
+          </div>
           <div class="row between" style="margin-top:8px">
             <div class="row" style="gap:6px">
               <span class="badge">${escapeHtml(exercise.equipment)}</span>
@@ -658,9 +709,12 @@ function renderPlanner() {
         <div class="card-list" style="margin-top:16px">
           ${plans.length ? plans.map((plan) => `
             <article class="plan-row">
-              <div>
-                <h3>${escapeHtml(plan.exercise.name || "Exercise")}</h3>
-                <p class="muted">${escapeHtml(plan.exercise.muscleGroup || "Planned exercise")}</p>
+              <div class="ex-row">
+                ${exerciseThumb(plan.exercise)}
+                <div class="ex-row-text">
+                  <h3>${escapeHtml(plan.exercise.name || "Exercise")}</h3>
+                  <p class="muted">${escapeHtml(plan.exercise.muscleGroup || "Planned exercise")}</p>
+                </div>
               </div>
               <button class="button heat small" type="button" data-delete-plan="${plan.id}">Remove</button>
             </article>
@@ -724,8 +778,13 @@ function renderFreestylePicker() {
                 <span class="badge">${escapeHtml(exercise.muscleGroup)}</span>
                 ${isSelected ? '<span class="badge" style="background:var(--accent);color:#000">✓ Selected</span>' : ''}
               </div>
-              <h3>${escapeHtml(exercise.name)}</h3>
-              <p class="muted">${escapeHtml(exercise.description)}</p>
+              <div class="ex-row">
+                ${exerciseThumb(exercise)}
+                <div class="ex-row-text">
+                  <h3>${escapeHtml(exercise.name)}</h3>
+                  <p class="muted">${escapeHtml(exercise.description)}</p>
+                </div>
+              </div>
               <div class="row">
                 <span class="badge">${escapeHtml(exercise.equipment)}</span>
                 <span class="badge">${escapeHtml(exercise.difficulty)}</span>
@@ -875,9 +934,12 @@ function renderWorkout() {
         ${remainingExercises.length ? remainingExercises.map(({ item, exerciseIndex }) => `
           <article class="item-card workout-exercise">
             <div class="row between">
-              <div>
-                <h3>${escapeHtml(item.name)}</h3>
-                <p class="muted">Target: ${item.targetSets} sets x ${item.targetReps} reps at ${item.targetWeight || 0}${state.settings.unit}</p>
+              <div class="ex-row">
+                ${exerciseThumb(exerciseById(item.exerciseId) || { name: item.name, muscleGroup: "" })}
+                <div class="ex-row-text">
+                  <h3>${escapeHtml(item.name)}</h3>
+                  <p class="muted">Target: ${item.targetSets} sets x ${item.targetReps} reps at ${item.targetWeight || 0}${state.settings.unit}</p>
+                </div>
               </div>
               <div class="row exercise-actions">
                 <button class="button guide-btn small" type="button" data-workout-guide="${item.exerciseId}" title="Form Guide">📖</button>
@@ -1276,7 +1338,7 @@ function renderGuide() {
       <!-- Main layout: video + muscle map -->
       <div class="guide-main-layout">
         <div class="guide-video-col">
-          ${guide?.youtubeId ? `
+          ${(guide || true) ? `
             <div class="video-wrapper">
               <iframe
                 id="guideIframe"
@@ -1290,8 +1352,8 @@ function renderGuide() {
               ></iframe>
             </div>
             <div class="video-controls-bar">
-              <button class="video-control-btn active" data-video-select="curated" data-youtube-id="${guide.youtubeId}" data-name="${escapeHtml(exercise.name)}">
-                ⭐ Curated Guide
+              <button class="video-control-btn active" data-video-select="curated" data-youtube-id="${guide?.youtubeId || ''}" data-name="${escapeHtml(exercise.name)}">
+                ⭐ Jeet Selal
               </button>
               <button class="video-control-btn" data-video-select="search" data-name="${escapeHtml(exercise.name)}">
                 🔍 Other Creators
@@ -1302,14 +1364,30 @@ function renderGuide() {
             </div>
             <div id="guideYtResults"></div>
           ` : `
-            <div class="video-placeholder-card">
-              <div class="placeholder-icon">📺</div>
-              <h3>Form Tutorial</h3>
-              <p>Is exercise ke liye curated video available nahi hai.</p>
-              <a class="button accent" href="https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' Jeet Selal')}" target="_blank" rel="noopener">
-                ▶ Watch on YouTube
+            <div class="video-wrapper">
+              <iframe
+                id="guideIframe"
+                class="guide-video"
+                src=""
+                title="${escapeHtml(exercise.name)} tutorial"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                loading="lazy"
+              ></iframe>
+            </div>
+            <div class="video-controls-bar">
+              <button class="video-control-btn active" data-video-select="curated" data-youtube-id="" data-name="${escapeHtml(exercise.name)}">
+                ⭐ Jeet Selal
+              </button>
+              <button class="video-control-btn" data-video-select="search" data-name="${escapeHtml(exercise.name)}">
+                🔍 Other Creators
+              </button>
+              <a class="video-control-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' Jeet Selal')}" target="_blank" rel="noopener">
+                ↗ Open YouTube
               </a>
             </div>
+            <div id="guideYtResults"></div>
           `}
         </div>
         <div class="guide-info-col">
@@ -1342,6 +1420,18 @@ function attachGuideHandlers(view) {
     });
   }
 
+  // Auto-load Jeet Selal video via API search if no hardcoded youtubeId
+  const curatedBtn = view.querySelector("[data-video-select='curated']");
+  const iframe = view.querySelector("#guideIframe");
+  const ytResultsEl = view.querySelector("#guideYtResults");
+  if (curatedBtn && iframe && !curatedBtn.dataset.youtubeId) {
+    const name = curatedBtn.dataset.name;
+    if (getActiveGoogleApiKey() && ytResultsEl) {
+      // Use API to find and auto-play Jeet Selal video in-app
+      loadYtResults(ytResultsEl, name + " Jeet Selal", iframe);
+    }
+  }
+
   // Creator Video switches
   view.querySelectorAll("[data-video-select]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -1357,15 +1447,19 @@ function attachGuideHandlers(view) {
       if (type === "curated") {
         const youtubeId = btn.dataset.youtubeId;
         const name = btn.dataset.name;
-        iframe.src = window.buildYouTubeUrl ? window.buildYouTubeUrl(youtubeId, name) : `https://www.youtube.com/embed/${youtubeId}`;
-        if (ytResultsEl) ytResultsEl.innerHTML = "";
+        if (youtubeId) {
+          iframe.src = window.buildYouTubeUrl ? window.buildYouTubeUrl(youtubeId, name) : `https://www.youtube.com/embed/${youtubeId}`;
+          if (ytResultsEl) ytResultsEl.innerHTML = "";
+        } else {
+          // No hardcoded ID — search Jeet Selal via API and play in-app
+          if (getActiveGoogleApiKey() && ytResultsEl) {
+            loadYtResults(ytResultsEl, name + " Jeet Selal", iframe);
+          }
+        }
       } else if (type === "search") {
         const name = btn.dataset.name;
         if (getActiveGoogleApiKey() && ytResultsEl) {
           loadYtResults(ytResultsEl, name, iframe);
-        } else {
-          const query = encodeURIComponent(name + " Jeet Selal");
-          iframe.src = `https://www.youtube.com/embed?listType=search&list=${query}&rel=0&modestbranding=1&playsinline=1`;
         }
       }
     });
@@ -1393,7 +1487,8 @@ function renderSettings() {
           <label class="label">Default Sets<input class="control" name="defaultSets" value="${state.settings.defaultSets}" inputmode="numeric" /></label>
           <div class="api-key-section">
             <h4>🔑 Google API Key ${keyStatus}</h4>
-            <p class="api-key-hint">YouTube video search aur AI Coach ke liye ek Google API key chahiye. <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" style="color:var(--accent)">Google Cloud Console</a> se free key banao.</p>
+            <p class="api-key-hint">AI Coach aur Form Check ke liye <strong>Gemini API key</strong> chahiye. <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="color:var(--accent)">Google AI Studio</a> se free key banao (1 click — "Create API key"). Yahi key YouTube search ke liye bhi chal jaati hai.</p>
+            <p class="api-key-hint" style="font-size:0.72rem;opacity:0.85">⚠️ Firebase key ya YouTube-only restricted key Gemini ke liye kaam nahi karti — "blocked" error aata hai.</p>
             <div class="api-key-row">
               <label>API Key</label>
               <input type="password" name="googleApiKey" value="${escapeHtml(apiKey)}" placeholder="AIzaSy..." autocomplete="off" />
@@ -1423,7 +1518,7 @@ async function searchYouTubeVideos(query, maxResults = 6) {
 
   const params = new URLSearchParams({
     part: "snippet",
-    q: query + " exercise form tutorial",
+    q: query,
     type: "video",
     maxResults: String(maxResults),
     videoCategoryId: "17",
@@ -1489,6 +1584,26 @@ async function loadYtResults(containerEl, query, iframeEl) {
 // ── Gemini AI API ──
 let aiSending = false;
 
+// Current free-tier multimodal model (gemini-2.0-flash was shut down June 2026)
+const GEMINI_MODEL = "gemini-2.5-flash";
+
+function friendlyGeminiError(errorData, status) {
+  const raw = errorData?.error?.message || "";
+  const reason = errorData?.error?.status || errorData?.error?.details?.[0]?.reason || "";
+  const lower = (raw + " " + reason).toLowerCase();
+
+  if (lower.includes("blocked") || lower.includes("permission_denied") || lower.includes("api_key_service_blocked") || lower.includes("service_disabled") || status === 403) {
+    return "Ye API key Gemini ke liye allowed nahi hai. Fix: Google AI Studio (aistudio.google.com/app/apikey) se ek naya Gemini API key banao aur Profile mein paste karo. Firebase key Gemini ke liye kaam nahi karti.";
+  }
+  if (lower.includes("api_key_invalid") || lower.includes("api key not valid") || status === 400 && lower.includes("key")) {
+    return "API key invalid hai. Profile mein sahi Gemini API key daalo (Google AI Studio se).";
+  }
+  if (lower.includes("quota") || lower.includes("resource_exhausted") || status === 429) {
+    return "API ka free quota khatam ho gaya. Thodi der baad try karo ya Google AI Studio mein quota check karo.";
+  }
+  return raw || `API error ${status}`;
+}
+
 function getGeminiSystemPrompt() {
   const today = todayName();
   const plans = state.plans.filter((p) => p.dayOfWeek === today).map(planWithExercise);
@@ -1534,7 +1649,7 @@ async function sendToGemini(userMessage) {
   });
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1552,8 +1667,7 @@ async function sendToGemini(userMessage) {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    const errorMsg = errorData?.error?.message || `API error ${response.status}`;
-    throw new Error(errorMsg);
+    throw new Error(friendlyGeminiError(errorData, response.status));
   }
 
   const data = await response.json();
@@ -1743,6 +1857,460 @@ function attachAiCoachHandlers(view) {
   if (messagesEl) messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
+// ── AI Form Check (Phase 1: Gemini Video Analysis) ──
+let fcStream = null;
+let fcMediaRecorder = null;
+let fcRecordedChunks = [];
+let fcRecordedBlob = null;
+let fcFacingMode = "environment";
+let fcAnalyzing = false;
+let fcTimerInterval = null;
+const FC_MAX_SECONDS = 20;
+
+function stopFormCheckCamera() {
+  if (fcMediaRecorder && fcMediaRecorder.state !== "inactive") {
+    try { fcMediaRecorder.stop(); } catch (e) {}
+  }
+  if (fcStream) {
+    fcStream.getTracks().forEach((track) => track.stop());
+    fcStream = null;
+  }
+  if (fcTimerInterval) {
+    clearInterval(fcTimerInterval);
+    fcTimerInterval = null;
+  }
+  fcMediaRecorder = null;
+  fcRecordedChunks = [];
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const dataUrl = String(reader.result || "");
+      resolve(dataUrl.split(",")[1] || "");
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+function renderFormCheck() {
+  const apiKey = getActiveGoogleApiKey();
+  const exercises = state.exercises.slice().sort((a, b) => a.name.localeCompare(b.name));
+  const selectedId = state.ui.formCheckExerciseId || "";
+
+  return `
+    <div class="form-check-container">
+      <div class="fc-header">
+        <div class="fc-header-icon">🎯</div>
+        <div class="fc-header-info">
+          <h3>AI Form Check</h3>
+          <p>Apni exercise record karo, AI tumhari form analyze karega${!apiKey ? " · <span style='color:var(--heat)'>API key required</span>" : ""}</p>
+        </div>
+      </div>
+
+      <div class="fc-tips">
+        <strong>📐 Best results ke liye:</strong>
+        <ul>
+          <li>Camera ko side se ya 45° angle pe rakho (tripod ya wall pe lean)</li>
+          <li>Poora body frame mein aana chahiye (head to feet)</li>
+          <li>Achhi lighting rakho, 1-2 clean reps record karo</li>
+          <li>Max ${FC_MAX_SECONDS} seconds — short clip best hai</li>
+        </ul>
+      </div>
+
+      <label class="label fc-exercise-select">Exercise (optional — AI khud bhi detect kar lega)
+        <select class="control" id="fcExercise">
+          <option value="">Auto-detect</option>
+          ${exercises.map((ex) => `<option value="${ex.id}" ${String(ex.id) === String(selectedId) ? "selected" : ""}>${escapeHtml(ex.name)}</option>`).join("")}
+        </select>
+      </label>
+
+      <div class="fc-stage">
+        <video id="fcPreview" class="fc-video" autoplay muted playsinline style="display:none"></video>
+        <video id="fcPlayback" class="fc-video" controls playsinline style="display:none"></video>
+        <div id="fcStagePlaceholder" class="fc-stage-placeholder">
+          <div class="fc-stage-icon">📹</div>
+          <p>Camera start karo ya video upload karo</p>
+        </div>
+        <div id="fcTimer" class="fc-timer" style="display:none">00:00</div>
+        <div id="fcRecDot" class="fc-rec-dot" style="display:none"></div>
+      </div>
+
+      <div class="fc-controls">
+        <button class="button primary" id="fcStartCamera" type="button" ${!apiKey ? "disabled" : ""}>📷 Start Camera</button>
+        <button class="button heat" id="fcRecord" type="button" style="display:none">⏺ Record</button>
+        <button class="button heat" id="fcStop" type="button" style="display:none">⏹ Stop</button>
+        <button class="button ghost" id="fcFlip" type="button" style="display:none">🔄 Flip</button>
+        <button class="button accent" id="fcAnalyze" type="button" style="display:none">✨ Analyze Form</button>
+        <button class="button ghost" id="fcRetake" type="button" style="display:none">↩ Retake</button>
+        <label class="button fc-upload-btn ${!apiKey ? "disabled" : ""}">📁 Upload
+          <input type="file" accept="video/*" id="fcUpload" hidden ${!apiKey ? "disabled" : ""} />
+        </label>
+      </div>
+
+      ${!apiKey ? `
+        <div class="fc-no-key">
+          <p>⚠️ AI analysis ke liye Google API key chahiye. <button class="link-btn" data-route-jump="settings">Profile mein add karo</button></p>
+        </div>
+      ` : ""}
+
+      <div id="fcResults" class="fc-results"></div>
+    </div>
+  `;
+}
+
+function fcSetStage(mode) {
+  // mode: "idle" | "live" | "recorded"
+  const preview = document.getElementById("fcPreview");
+  const playback = document.getElementById("fcPlayback");
+  const placeholder = document.getElementById("fcStagePlaceholder");
+  const startBtn = document.getElementById("fcStartCamera");
+  const recordBtn = document.getElementById("fcRecord");
+  const stopBtn = document.getElementById("fcStop");
+  const flipBtn = document.getElementById("fcFlip");
+  const analyzeBtn = document.getElementById("fcAnalyze");
+  const retakeBtn = document.getElementById("fcRetake");
+
+  if (!preview) return;
+
+  const show = (el, on) => { if (el) el.style.display = on ? "" : "none"; };
+
+  if (mode === "idle") {
+    show(preview, false); show(playback, false); show(placeholder, true);
+    show(startBtn, true); show(recordBtn, false); show(stopBtn, false);
+    show(flipBtn, false); show(analyzeBtn, false); show(retakeBtn, false);
+  } else if (mode === "live") {
+    show(preview, true); show(playback, false); show(placeholder, false);
+    show(startBtn, false); show(recordBtn, true); show(stopBtn, false);
+    show(flipBtn, true); show(analyzeBtn, false); show(retakeBtn, false);
+  } else if (mode === "recording") {
+    show(preview, true); show(playback, false); show(placeholder, false);
+    show(startBtn, false); show(recordBtn, false); show(stopBtn, true);
+    show(flipBtn, false); show(analyzeBtn, false); show(retakeBtn, false);
+  } else if (mode === "recorded") {
+    show(preview, false); show(playback, true); show(placeholder, false);
+    show(startBtn, false); show(recordBtn, false); show(stopBtn, false);
+    show(flipBtn, false); show(analyzeBtn, true); show(retakeBtn, true);
+  }
+}
+
+async function fcStartCamera() {
+  try {
+    if (fcStream) fcStream.getTracks().forEach((t) => t.stop());
+    fcStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: fcFacingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+    const preview = document.getElementById("fcPreview");
+    if (preview) {
+      preview.srcObject = fcStream;
+      preview.muted = true;
+    }
+    fcSetStage("live");
+  } catch (error) {
+    toast("Camera access nahi mila: " + (error.message || error.name));
+  }
+}
+
+function fcPickMimeType() {
+  const candidates = [
+    "video/webm;codecs=vp9",
+    "video/webm;codecs=vp8",
+    "video/webm",
+    "video/mp4"
+  ];
+  for (const type of candidates) {
+    if (window.MediaRecorder && MediaRecorder.isTypeSupported(type)) return type;
+  }
+  return "";
+}
+
+function fcStartRecording() {
+  if (!fcStream) return;
+  fcRecordedChunks = [];
+  const mimeType = fcPickMimeType();
+  try {
+    fcMediaRecorder = new MediaRecorder(fcStream, mimeType ? { mimeType } : undefined);
+  } catch (e) {
+    fcMediaRecorder = new MediaRecorder(fcStream);
+  }
+
+  fcMediaRecorder.ondataavailable = (e) => {
+    if (e.data && e.data.size > 0) fcRecordedChunks.push(e.data);
+  };
+  fcMediaRecorder.onstop = () => {
+    const type = fcMediaRecorder.mimeType || mimeType || "video/webm";
+    fcRecordedBlob = new Blob(fcRecordedChunks, { type });
+    const playback = document.getElementById("fcPlayback");
+    if (playback) {
+      playback.srcObject = null;
+      playback.src = URL.createObjectURL(fcRecordedBlob);
+    }
+    // Stop live camera tracks to save battery
+    if (fcStream) { fcStream.getTracks().forEach((t) => t.stop()); fcStream = null; }
+    fcSetStage("recorded");
+  };
+
+  fcMediaRecorder.start();
+  fcSetStage("recording");
+  fcStartTimer();
+}
+
+function fcStartTimer() {
+  const timerEl = document.getElementById("fcTimer");
+  const recDot = document.getElementById("fcRecDot");
+  if (timerEl) timerEl.style.display = "";
+  if (recDot) recDot.style.display = "";
+  let seconds = 0;
+  if (fcTimerInterval) clearInterval(fcTimerInterval);
+  fcTimerInterval = setInterval(() => {
+    seconds += 1;
+    const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
+    if (timerEl) timerEl.textContent = `${m}:${s}`;
+    if (seconds >= FC_MAX_SECONDS) fcStopRecording();
+  }, 1000);
+}
+
+function fcStopRecording() {
+  if (fcTimerInterval) { clearInterval(fcTimerInterval); fcTimerInterval = null; }
+  const timerEl = document.getElementById("fcTimer");
+  const recDot = document.getElementById("fcRecDot");
+  if (timerEl) timerEl.style.display = "none";
+  if (recDot) recDot.style.display = "none";
+  if (fcMediaRecorder && fcMediaRecorder.state !== "inactive") {
+    fcMediaRecorder.stop();
+  }
+}
+
+function buildFormCheckPrompt(exerciseName) {
+  const target = exerciseName
+    ? `The user says this exercise is "${exerciseName}". Confirm if the video matches, otherwise use what you actually see.`
+    : `Identify the exercise being performed in the video.`;
+  return `You are GRAVITAS AI Form Coach, an expert strength and conditioning coach.
+Analyze the gym exercise in this video carefully. ${target}
+
+Look at: joint angles, range of motion, spine/back position, bar/weight path, tempo, balance, and overall technique.
+
+Respond ONLY with valid JSON (no markdown, no extra text) in this exact shape:
+{
+  "exercise": "name of exercise you see",
+  "formScore": 0-100 integer rating overall form,
+  "summary": "1-2 sentence overall verdict in Hinglish (Hindi+English mix)",
+  "goodPoints": ["things done correctly, in Hinglish"],
+  "mistakes": [{"issue": "the mistake in Hinglish", "correction": "how to fix it in Hinglish", "severity": "high|medium|low"}],
+  "safetyWarnings": ["injury risks if any, in Hinglish"],
+  "canAnalyze": true
+}
+
+If the video is too unclear, dark, or does not show a recognizable exercise, set "canAnalyze" to false and explain why in "summary". Keep all text concise and practical.`;
+}
+
+async function analyzeFormVideo(blob, exerciseName) {
+  const apiKey = getActiveGoogleApiKey();
+  if (!apiKey) throw new Error("Google API key not configured. Go to Profile to add it.");
+
+  const sizeMB = blob.size / (1024 * 1024);
+  if (sizeMB > 18) {
+    throw new Error("Video bahut bada hai (" + sizeMB.toFixed(1) + "MB). Chhoti clip record karo (max ~15s).");
+  }
+
+  const base64 = await blobToBase64(blob);
+  const mimeType = blob.type ? blob.type.split(";")[0] : "video/webm";
+  const prompt = buildFormCheckPrompt(exerciseName);
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{
+          role: "user",
+          parts: [
+            { inline_data: { mime_type: mimeType, data: base64 } },
+            { text: prompt }
+          ]
+        }],
+        generationConfig: {
+          temperature: 0.4,
+          maxOutputTokens: 1200,
+          responseMimeType: "application/json"
+        }
+      })
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(friendlyGeminiError(errorData, response.status));
+  }
+
+  const data = await response.json();
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error("AI se empty response aaya. Dubara try karo.");
+
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    // Fallback: return raw text wrapped
+    return { _raw: text };
+  }
+}
+
+function renderFormCheckResults(result) {
+  if (result._raw) {
+    return `<div class="fc-result-card"><div class="fc-result-body">${formatAiText(result._raw)}</div></div>`;
+  }
+
+  if (result.canAnalyze === false) {
+    return `
+      <div class="fc-result-card fc-result-warn">
+        <h4>⚠️ Analyze nahi kar paaye</h4>
+        <p>${escapeHtml(result.summary || "Video clear nahi hai. Behtar lighting aur full-body framing ke saath dubara try karo.")}</p>
+      </div>
+    `;
+  }
+
+  const score = Number(result.formScore) || 0;
+  const scoreColor = score >= 80 ? "var(--accent)" : score >= 55 ? "var(--cool)" : "var(--heat)";
+  const scoreLabel = score >= 80 ? "Great Form" : score >= 55 ? "Decent — Improve" : "Needs Work";
+
+  const goodHtml = (result.goodPoints || []).length ? `
+    <div class="fc-section">
+      <h4>✅ Sahi kar rahe ho</h4>
+      <ul class="fc-list good">${result.goodPoints.map((p) => `<li>${escapeHtml(p)}</li>`).join("")}</ul>
+    </div>
+  ` : "";
+
+  const sevIcon = { high: "🔴", medium: "🟡", low: "🟢" };
+  const mistakesHtml = (result.mistakes || []).length ? `
+    <div class="fc-section">
+      <h4>🔧 Galtiyan & Sudhaar</h4>
+      <div class="fc-mistakes">
+        ${result.mistakes.map((m) => `
+          <div class="fc-mistake sev-${escapeHtml(m.severity || "medium")}">
+            <div class="fc-mistake-issue">${sevIcon[m.severity] || "🟡"} ${escapeHtml(m.issue || "")}</div>
+            <div class="fc-mistake-fix">👉 ${escapeHtml(m.correction || "")}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  ` : "";
+
+  const safetyHtml = (result.safetyWarnings || []).length ? `
+    <div class="fc-section fc-safety">
+      <h4>🚨 Safety</h4>
+      <ul class="fc-list">${result.safetyWarnings.map((w) => `<li>${escapeHtml(w)}</li>`).join("")}</ul>
+    </div>
+  ` : "";
+
+  return `
+    <div class="fc-result-card">
+      <div class="fc-result-top">
+        <div class="fc-score-ring" style="--score:${score};--score-color:${scoreColor}">
+          <span class="fc-score-num">${score}</span>
+        </div>
+        <div class="fc-result-meta">
+          <span class="fc-exercise-name">${escapeHtml(result.exercise || "Exercise")}</span>
+          <span class="fc-score-label" style="color:${scoreColor}">${scoreLabel}</span>
+        </div>
+      </div>
+      <p class="fc-summary">${escapeHtml(result.summary || "")}</p>
+      ${goodHtml}
+      ${mistakesHtml}
+      ${safetyHtml}
+      <p class="fc-disclaimer">AI analysis sirf guidance ke liye hai. Heavy lifts ke liye qualified trainer se confirm karo.</p>
+    </div>
+  `;
+}
+
+async function fcRunAnalysis() {
+  if (fcAnalyzing || !fcRecordedBlob) return;
+  const resultsEl = document.getElementById("fcResults");
+  const analyzeBtn = document.getElementById("fcAnalyze");
+  const exSelect = document.getElementById("fcExercise");
+  const exId = exSelect ? exSelect.value : "";
+  const exName = exId ? (exerciseById(exId)?.name || "") : "";
+
+  fcAnalyzing = true;
+  if (analyzeBtn) { analyzeBtn.disabled = true; analyzeBtn.textContent = "✨ Analyzing..."; }
+  if (resultsEl) {
+    resultsEl.innerHTML = `
+      <div class="fc-analyzing">
+        <div class="ai-typing"><div class="ai-typing-dot"></div><div class="ai-typing-dot"></div><div class="ai-typing-dot"></div></div>
+        <p>AI tumhari form analyze kar raha hai... (10-20 sec)</p>
+      </div>
+    `;
+  }
+
+  try {
+    const result = await analyzeFormVideo(fcRecordedBlob, exName);
+    if (resultsEl) resultsEl.innerHTML = renderFormCheckResults(result);
+  } catch (error) {
+    if (resultsEl) resultsEl.innerHTML = `<div class="fc-result-card fc-result-warn"><h4>⚠️ Error</h4><p>${escapeHtml(error.message)}</p></div>`;
+  } finally {
+    fcAnalyzing = false;
+    if (analyzeBtn) { analyzeBtn.disabled = false; analyzeBtn.textContent = "✨ Analyze Again"; }
+    if (resultsEl) resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function attachFormCheckHandlers(view) {
+  fcSetStage("idle");
+
+  const exSelect = view.querySelector("#fcExercise");
+  if (exSelect) {
+    exSelect.addEventListener("change", () => {
+      state.ui.formCheckExerciseId = exSelect.value;
+    });
+  }
+
+  const startBtn = view.querySelector("#fcStartCamera");
+  if (startBtn) startBtn.addEventListener("click", fcStartCamera);
+
+  const recordBtn = view.querySelector("#fcRecord");
+  if (recordBtn) recordBtn.addEventListener("click", fcStartRecording);
+
+  const stopBtn = view.querySelector("#fcStop");
+  if (stopBtn) stopBtn.addEventListener("click", fcStopRecording);
+
+  const flipBtn = view.querySelector("#fcFlip");
+  if (flipBtn) flipBtn.addEventListener("click", async () => {
+    fcFacingMode = fcFacingMode === "environment" ? "user" : "environment";
+    await fcStartCamera();
+  });
+
+  const analyzeBtn = view.querySelector("#fcAnalyze");
+  if (analyzeBtn) analyzeBtn.addEventListener("click", fcRunAnalysis);
+
+  const retakeBtn = view.querySelector("#fcRetake");
+  if (retakeBtn) retakeBtn.addEventListener("click", () => {
+    fcRecordedBlob = null;
+    const results = view.querySelector("#fcResults");
+    if (results) results.innerHTML = "";
+    fcStartCamera();
+  });
+
+  const upload = view.querySelector("#fcUpload");
+  if (upload) upload.addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    stopFormCheckCamera();
+    fcRecordedBlob = file;
+    const playback = view.querySelector("#fcPlayback");
+    if (playback) {
+      playback.srcObject = null;
+      playback.src = URL.createObjectURL(file);
+    }
+    const results = view.querySelector("#fcResults");
+    if (results) results.innerHTML = "";
+    fcSetStage("recorded");
+  });
+}
+
 
 function authErrorMessage(error) {
   const code = String(error?.code || "");
@@ -1856,6 +2424,7 @@ function attachScreenHandlers(route) {
   if (route === "settings") attachSettingsHandlers(view);
   if (route === "guide") attachGuideHandlers(view);
   if (route === "aiCoach") attachAiCoachHandlers(view);
+  if (route === "formCheck") attachFormCheckHandlers(view);
 
   if (state.ui.keepLibraryFocus) {
     const search = view.querySelector("#librarySearch");
@@ -2228,10 +2797,61 @@ function showFormVideoModal(exerciseId) {
       }
     };
   } else {
-    videoContent.style.display = "none";
-    videoPlaceholder.style.display = "";
-    videoPlaceholderLink.href = `https://www.youtube.com/results?search_query=${query}`;
-    iframe.src = "";
+    // No hardcoded youtubeId — use API to search and play Jeet Selal videos in-app
+    videoContent.style.display = "";
+    videoPlaceholder.style.display = "none";
+
+    const curatedBtn = document.getElementById("modalVideoBtnCurated");
+    const searchBtn = document.getElementById("modalVideoBtnSearch");
+    const externalLink = document.getElementById("modalVideoLinkExternal");
+
+    curatedBtn.classList.add("active");
+    searchBtn.classList.remove("active");
+    externalLink.href = `https://www.youtube.com/results?search_query=${query}`;
+
+    // Auto-search Jeet Selal videos and play first result in-app
+    if (getActiveGoogleApiKey()) {
+      let resultsEl = modal.querySelector("#modalYtResults");
+      if (!resultsEl) {
+        resultsEl = document.createElement("div");
+        resultsEl.id = "modalYtResults";
+        const controlsBar = modal.querySelector(".video-controls-bar");
+        if (controlsBar) controlsBar.insertAdjacentElement("afterend", resultsEl);
+      }
+      loadYtResults(resultsEl, exercise.name + " Jeet Selal", iframe);
+    } else {
+      iframe.src = `https://www.youtube.com/embed?listType=search&list=${query}&rel=0&modestbranding=1&playsinline=1`;
+    }
+
+    curatedBtn.onclick = () => {
+      curatedBtn.classList.add("active");
+      searchBtn.classList.remove("active");
+      if (getActiveGoogleApiKey()) {
+        let resultsEl = modal.querySelector("#modalYtResults");
+        if (!resultsEl) {
+          resultsEl = document.createElement("div");
+          resultsEl.id = "modalYtResults";
+          const controlsBar = modal.querySelector(".video-controls-bar");
+          if (controlsBar) controlsBar.insertAdjacentElement("afterend", resultsEl);
+        }
+        loadYtResults(resultsEl, exercise.name + " Jeet Selal", iframe);
+      }
+    };
+
+    searchBtn.onclick = () => {
+      curatedBtn.classList.remove("active");
+      searchBtn.classList.add("active");
+      if (getActiveGoogleApiKey()) {
+        let resultsEl = modal.querySelector("#modalYtResults");
+        if (!resultsEl) {
+          resultsEl = document.createElement("div");
+          resultsEl.id = "modalYtResults";
+          const controlsBar = modal.querySelector(".video-controls-bar");
+          if (controlsBar) controlsBar.insertAdjacentElement("afterend", resultsEl);
+        }
+        loadYtResults(resultsEl, exercise.name, iframe);
+      }
+    };
   }
 
   // Bench angle info
@@ -2474,6 +3094,10 @@ function runAction(action) {
 }
 
 function setRoute(route) {
+  // Clean up camera stream when leaving Form Check screen
+  if (state.ui.route === "formCheck" && route !== "formCheck") {
+    stopFormCheckCamera();
+  }
   state.ui.route = route;
   render();
 }

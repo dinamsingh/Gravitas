@@ -1,9 +1,11 @@
-const CACHE_NAME = "gravitas-phone-v25";
+const CACHE_NAME = "gravitas-phone-v30";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./data.js",
+  "./exercise-guides.js",
+  "./exercise-images.js",
   "./firebase-config.js",
   "./firebase-sync.js",
   "./app.js",

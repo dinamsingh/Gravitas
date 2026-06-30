@@ -1272,11 +1272,12 @@ window.getExerciseGuide = function(exerciseName) {
 };
 
 // Helper: Build YouTube embed URL
+// Uses direct embed for known video IDs (plays in-app), Jeet Selal search fallback for unknown exercises
 window.buildYouTubeUrl = function(youtubeId, exerciseName) {
   if (youtubeId) {
     return `https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1&playsinline=1`;
   }
-  // Fallback: search embed for custom exercises
-  const query = encodeURIComponent((exerciseName || "exercise") + " Jeet Selal");
+  // Fallback: search embed for exercises without a curated video
+  const query = encodeURIComponent((exerciseName || "exercise") + " Jeet Selal form");
   return `https://www.youtube.com/embed?listType=search&list=${query}&rel=0&modestbranding=1&playsinline=1`;
 };
